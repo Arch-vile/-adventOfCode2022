@@ -327,6 +327,12 @@ internal class MatrixTest {
                 Cursor(current.x, current.y + 1)
             }.map { it.value }
         )
+        assertEquals(
+            listOf(20, 10),
+            matrix.trace(Cursor(0, 2)) { current ->
+                Cursor(current.x, current.y - 1)
+            }.map { it.value }
+        )
 
         assertEquals(
             listOf(21, 32, 43),

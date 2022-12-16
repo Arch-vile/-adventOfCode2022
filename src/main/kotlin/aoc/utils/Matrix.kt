@@ -219,7 +219,7 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     }
 
     private fun isInBounds(next: Cursor): Boolean {
-        return next.x < width() && next.y < height()
+        return next.x >= 0 && next.x < width() && next.y >= 0 && next.y < height()
     }
 
     companion object {
