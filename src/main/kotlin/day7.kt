@@ -46,22 +46,37 @@ fun part1(): Int {
         }
     }
 
-    return listSizes(root)
-        .filter { secondPart(it).toInt() < 100000 }
-        .map { secondPart(it) }
-        .sumOf { it.toInt() }
+    val sizes = listSizes(root)
 
+    val sizeAvailable = 70000000 - root.size()
+    val sizeNeeded = 30000000 - sizeAvailable
+
+    println("used§ ${root.size()}")
+
+    println("available $sizeAvailable")
+    println("needed $sizeNeeded")
+    sizes.filter {
+        val size = secondPart(it).toInt()
+        size >= sizeNeeded
+    }
+        .sortedBy { secondPart(it).toInt() }
+        .forEach { println(it) }
+
+    // 3252529 not right
+    // 7229496 too high
+
+//    return secondPart(target).toInt()
+    return 1
 
 }
 
 fun part2(): Int {
 
 
-
     return 1;
 }
 
-fun listSizes(dir: Directory): List<String>  {
+fun listSizes(dir: Directory): List<String> {
 
     val thisSize = "${dir.name} ${dir.size()}"
 
