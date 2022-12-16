@@ -63,7 +63,7 @@ class Solutions {
     @Test
     fun day9() {
         assertEquals(6367, day9.part1())
-        assertEquals(1, day9.part2())
+        assertEquals(2536, day9.part2())
     }
 
     @Test

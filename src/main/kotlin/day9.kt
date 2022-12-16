@@ -19,6 +19,21 @@ fun part1(): Int {
     return knotMoves.toSet().size;
 }
 
+fun part2(): Int {
+    var head = Cursor(0, 0)
+
+    val directions = readInput("day9-input.txt")
+        .map { Pair(it.firstPart(), it.secondPart().toInt()) }
+
+    val headPositions = positions(head, directions)
+    var knotPositions  = runSimulation(head, headPositions)
+    repeat(8){
+        knotPositions = runSimulation(head, knotPositions)
+    }
+
+
+    return knotPositions.toSet().size
+}
 fun positions(start: Cursor, directions: List<Pair<String, Int>>): MutableList<Cursor> {
     var current = start
     val positions = mutableListOf(start)
@@ -29,17 +44,6 @@ fun positions(start: Cursor, directions: List<Pair<String, Int>>): MutableList<C
     return positions
 }
 
-fun part2(): Int {
-    var head = Cursor(0, 0)
-
-    val directions = readInput("day9-input.txt")
-        .map { Pair(it.firstPart(), it.secondPart().toInt()) }
-
-//    val knotMoves = runSimulation(head, directions)
-//    tailHistory.forEach { println(it) }
-//    return knotMoves.toSet().size;
-    return 1
-}
 
 fun runSimulation(start: Cursor, headLocations: MutableList<Cursor>): MutableList<Cursor> {
     var tail = start
