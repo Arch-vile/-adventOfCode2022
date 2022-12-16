@@ -1,19 +1,119 @@
 package aoc.utils
 
+import kotlin.math.min
+
+
+fun <T> List<T>.indexesOf(predicate: (T) -> Boolean): List<Int> {
+    val indexes = mutableListOf<Int>()
+    for (i in indices) {
+        if (predicate(this[i])) {
+            indexes.add(i)
+        }
+    }
+    return indexes
+}
+
 /**
  * Identical to takeWhile but also includes the first element that did not match.
  * listOf(1,2,3,4).takeUntil { it < 2 } --> [1,2,3]
  */
-fun <T> List<T>.takeUntil(predicate: (T) -> Boolean ): List<T> {
-   TODO()
+fun <T> List<T>.takeUntil(predicate: (T) -> Boolean): List<T> {
+    val delimeterIndex = indexOfFirst { !predicate(it) }
+    return if (delimeterIndex != -1) {
+        subList(0, delimeterIndex + 1)
+    } else {
+        this
+    }
+}
+
+/**
+ * Like takeWhile but only stop at the second matching element
+ */
+fun <T> List<T>.takeWhileSecond(predicate: (T) -> Boolean): List<T> {
+    val first = indexOfFirst { !predicate(it) }
+    return if (first != -1) {
+        val indexOfNext = subList(first + 1, size).indexOfFirst { !predicate(it) }
+        if (indexOfNext != -1) {
+            subList(0, first + 1 + indexOfNext)
+        } else {
+            this
+        }
+    } else {
+        this;
+    }
 }
 
 /**
  * Split just before the first element matching the predicate. The matching element is included
  * in the latter Pair element
  */
-fun <T> List<T>.splitBeforeFirst(predicate: (T) -> Boolean ): Pair<List<T>,List<T>> {
-   TODO()
+fun <T> List<T>.breakBeforeFirst(predicate: (T) -> Boolean): Pair<List<T>, List<T>> {
+    val firstIndex = indexOfFirst(predicate)
+    if(firstIndex == -1) {
+        return Pair(this, listOf())
+    }
+
+    return Pair(subList(0,firstIndex),subList(firstIndex,size))
+}
+
+/**
+ * Break the list to parts before each matching element. Separator is included in parts.
+ *
+ */
+fun <T> List<T>.breakBefore(predicate: (T) -> Boolean): List<List<T>> {
+
+    if(this.isEmpty()) return listOf()
+
+    val matches = indexesOf(predicate)
+    if(matches.isEmpty()) {
+        return listOf(this)
+    }
+
+    return listOf(0).plus(matches).plus(size)
+        .windowed(2, 1)
+        .map {
+            subList(it[0], it[1])
+        }
+}
+
+/**
+ * Break the list to parts after each matching element. Separator is included in parts.
+ *
+ */
+fun <T> List<T>.breakAfter(predicate: (T) -> Boolean): List<List<T>> {
+    if(this.isEmpty()) return listOf()
+
+    val matches = indexesOf(predicate).map { it+1 }
+    if(matches.isEmpty()) {
+        return listOf(this)
+    }
+
+    return listOf(0).plus(matches).plus(size)
+        .windowed(2, 1)
+        .map {
+            subList(it[0], min(it[1],size))
+        }
+}
+
+/**
+ * Split to sublists on given delimeter. Delimeter is not included on lists.
+ */
+fun <T> List<T>.splitOn(predicate: (T) -> Boolean): List<List<T>> {
+
+    if(this.isEmpty()) return listOf()
+
+    val matches = indexesOf(predicate).map { it }
+    if(matches.isEmpty()) {
+        return listOf(this)
+    }
+
+    val parts = matches.plus(size)
+        .windowed(2, 1)
+        .map {
+            subList(it[0]+1, it[1])
+        }
+
+    return listOf(subList(0,matches.first())).plus(parts)
 }
 
 fun <T> intersect(data: Collection<Collection<T>>): Collection<T> {
@@ -66,7 +166,7 @@ fun <T> permutations(set: Set<T>): Set<List<T>> {
     return allPermutations(set.toList())
 }
 
-data class SectionCandidate<T>(val section: List<T>, val before: List<T>, val after: List<T> )
+data class SectionCandidate<T>(val section: List<T>, val before: List<T>, val after: List<T>)
 
 /**
  * Find sections within given size limits that satisfy the condition matcher
@@ -77,11 +177,11 @@ fun <T> List<T>.findSections(sectionSize: ClosedRange<Int>, matcher: (SectionCan
 
     for (i in indices) {
         var sliceSize = sectionSize.start
-        while (sectionSize.contains(sliceSize) && i+sliceSize<size) {
+        while (sectionSize.contains(sliceSize) && i + sliceSize < size) {
             val section = subList(i, i + sliceSize)
-            val before = subList(0,i)
-            val after = subList(i+sliceSize,size)
-            if(matcher(SectionCandidate(section,before,after)))
+            val before = subList(0, i)
+            val after = subList(i + sliceSize, size)
+            if (matcher(SectionCandidate(section, before, after)))
                 sections.add(section)
             sliceSize++
         }
