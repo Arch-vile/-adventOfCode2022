@@ -12,19 +12,40 @@ fun part1(): Int {
     val directions = readInput("day9-input.txt")
         .map { Pair(it.firstPart(), it.secondPart().toInt()) }
 
-    val knotMoves = runSimulation(head,directions)
+    val headLocations = positions(head, directions)
+
+    val knotMoves = runSimulation(head, headLocations)
 //    tailHistory.forEach { println(it) }
     return knotMoves.toSet().size;
 }
 
-fun runSimulation(start: Cursor, directions: List<Pair<String, Int>>): MutableList<Cursor> {
-    var head = start
+fun positions(start: Cursor, directions: List<Pair<String, Int>>): MutableList<Cursor> {
+    var current = start
+    val positions = mutableListOf(start)
+    directions.forEach { direction ->
+        current = move(direction, current)
+        positions.add(current)
+    }
+    return positions
+}
+
+fun part2(): Int {
+    var head = Cursor(0, 0)
+
+    val directions = readInput("day9-input.txt")
+        .map { Pair(it.firstPart(), it.secondPart().toInt()) }
+
+//    val knotMoves = runSimulation(head, directions)
+//    tailHistory.forEach { println(it) }
+//    return knotMoves.toSet().size;
+    return 1
+}
+
+fun runSimulation(start: Cursor, headLocations: MutableList<Cursor>): MutableList<Cursor> {
     var tail = start
     val tailHistory = mutableListOf(tail)
 
-    directions.forEach { direction ->
-        head = move(direction, head)
-
+    headLocations.forEach {  head ->
         // If needs diagonal move
         while (
             head.x != tail.x && head.y != tail.y && isNotAdjecant(tail, head)
@@ -77,6 +98,3 @@ private fun move(it: Pair<String, Int>, point: Cursor): Cursor {
     }
 }
 
-fun part2(): Int {
-    return 1;
-}
