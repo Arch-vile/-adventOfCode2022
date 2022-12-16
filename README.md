@@ -1,2 +1,2 @@
-# adventOfCode2021
-Advent of code 2021
+# adventOfCode2022
+Advent of code 2022
