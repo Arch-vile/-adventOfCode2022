@@ -1,9 +1,9 @@
-package dayWIP
+package day4
 
 import utils.readInput
 
 fun part1(): Int {
-return    readInput("input.txt")
+return    readInput("day4-input.txt")
         .map { it.split(",") }
         .map {
             Pair(
@@ -38,7 +38,7 @@ fun toRange(s: String): Pair<Int, Int> {
 }
 
 fun part2(): Int {
-    return    readInput("input.txt")
+    return    readInput("day4-input.txt")
         .map { it.split(",") }
         .map {
             Pair(
