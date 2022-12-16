@@ -85,6 +85,9 @@ fun <T> Collection<T>.splitOn(separator: T): List<List<T>> {
         .map { it -> if(it.last() == separator) it.dropLast(1) else it }
 }
 
+fun <T> List<T>.splitMiddle(): Pair<List<T>,List<T>> {
+   return Pair(subList(0,size/2),subList(size/2,size))
+}
 
 /**
  * Split to sublists after given delimeter. Delimeter is included in the preceding sublist.
