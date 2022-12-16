@@ -111,17 +111,26 @@ internal class GraphTest {
 
     @Test
     fun shortestPath() {
-        var first = Node(1)
-        var second =  Node(2)
-        var third = Node(3)
-        var fourth = Node(4)
+        /**
+         *   A - - 2 - - B
+         *   |         /
+         *   |      5
+         *   3    /
+         *   | /
+         *   C --6-- D
+         */
 
-        first.link(2,second)
-        first.link(3, third)
-        third.link(5,second)
-        third.link(6,fourth)
+        var a = Node('a')
+        var b =  Node('b')
+        var c = Node('c')
+        var d = Node('d')
 
-       assertEquals(9, shortestPath(first, fourth))
+        a.link(2,b)
+        a.link(3, c)
+        c.link(5,b)
+        c.link(6,d)
+
+       assertEquals(9, shortestPath(a, d))
     }
 
 
