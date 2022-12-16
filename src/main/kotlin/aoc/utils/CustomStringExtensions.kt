@@ -2,7 +2,7 @@ package aoc.utils
 
 fun sort(value: String) = value.toCharArray().sorted().joinToString("")
 
-fun String.toList() = toCharArray().toList()
+fun String.toList() = toCharArray().toList().map { it.toString() }
 
 fun String.firstPart(delim: String = " ") = split(delim)[0]
 fun String.secondPart(delim: String = " ") = split(delim)[1]

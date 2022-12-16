@@ -11,7 +11,9 @@ fun part1(): Int {
         .map { it.toList().map { it.toInt() } }
 
 
-    val treesO = input.mapIndexed { y, row -> row.mapIndexed { x, column -> Tree("$y,$x", column)  }  }
+    val treesO = input.mapIndexed { y, row -> row.mapIndexed { x, column ->
+        Tree("$y,$x", column)  }
+    }
 
    val trees = Matrix(treesO).values();
 
@@ -21,30 +23,73 @@ fun part1(): Int {
     val inRows = countInLines(Matrix(trees).rotateCW().values())
 //    println(inRows)
 
-    val combined = inLines.union(inRows).toList().map { it.name }.sorted()
+    val combined = inLines.plus(inRows)
+        .groupBy { it.tree.name }
+        .map { it.value.map { it.score }.flatten() }
+        .map { product(it) }
+        .maxOf { it }
     println(combined)
 
+    return  1
     // 1121 not correct
     // 1531 not correct
     // 1125 not correct
-    return combined.size + input.size*2 + (input[0].size-2)*2;
+//    return combined.size + input.size*2 + (input[0].size-2)*2;
 }
 
-private fun countInLines(input: List<List<Tree>>): MutableSet<Tree> {
-    val trees = mutableSetOf<Tree>()
+// TODO make better
+fun product(it: List<Int>): Int {
 
-    for (y in 1..input.size - 2) {
-        for (x in 1..input[0].size - 2) {
+    return it.reduce { acc, i ->  i*acc}
 
+
+
+}
+
+
+data class TreeScore(val tree: Tree, val score: List<Int>)
+
+private fun countInLines(input: List<List<Tree>>): List<TreeScore> {
+    val trees = mutableListOf<TreeScore>()
+
+    for (y in input.indices) {
+        for (x in input[0].indices) {
+
+            val thisTree = input[y][x]
             val currentRow = input[y]
             val before = currentRow.subList(0, x)
             val after = currentRow.subList(x + 1, currentRow.size)
 
-            if (before.maxOf { it.hight } < input[y][x].hight || after.maxOf { it.hight } < input[y][x].hight)
-                trees.add(input[y][x])
+            val seenAfter = takeWhile(after, thisTree.hight)
+            val seenBefore = takeWhile(before.reversed(), thisTree.hight)
+
+            trees.add(TreeScore(thisTree, listOf(seenAfter.size,seenBefore.size)))
+
         }
     }
     return trees
+}
+
+// TODO make better
+fun takeWhile(after: List<Tree>, hight: Int): List<Tree> {
+
+    val result = mutableListOf<Tree>()
+    var ended = false
+    for(i in after.indices) {
+
+        if (ended) {
+            result.add(after[i])
+            break
+        }
+
+        if (after[i].hight < hight ||i == after.size-1 )
+            result.add(after[i])
+        else
+            ended = true
+
+    }
+
+return result
 }
 
 fun part2(): Int {
