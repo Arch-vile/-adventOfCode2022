@@ -26,6 +26,7 @@ internal class CustomStringExtensionsTest {
         assertEquals(2,"1 2".secondAsInt())
         assertEquals(2,"1,2".secondAsInt(","))
     }
+
     @Test
     fun find_int() {
         assertEquals(
