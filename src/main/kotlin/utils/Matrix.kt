@@ -176,6 +176,11 @@ class Matrix<T>(input: List<List<T>>) {
         }
     }
 
+   // Mutable
+    fun rows() = this.data
+
+    fun values() =this.data.map { it.map { it.value } }
+
     fun <V> map(mapper: (Entry<T>) -> V): Matrix<V> {
         val newData = data.map { row -> row.map { cell -> mapper(cell) } }
        return Matrix(newData)

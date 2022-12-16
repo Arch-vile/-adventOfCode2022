@@ -1,5 +1,6 @@
 package day5
 
+import utils.Matrix
 import utils.readInput
 
 fun part1(): String {
@@ -10,6 +11,7 @@ fun part2(): String {
     return solve(::makeMove2)
 }
 
+
 fun solve(mover: (Int, Int, Int, MutableList<MutableList<String>>) -> Unit): String {
 
     val crates = createCrates()
@@ -17,38 +19,19 @@ fun solve(mover: (Int, Int, Int, MutableList<MutableList<String>>) -> Unit): Str
     readInput("input.txt")
         .drop(10)
         .map { it.split(" ") }
-        .map { mover(it[1].toInt(), it[3].toInt() - 1, it[5].toInt() - 1, crates) }
+        .forEach { mover(it[1].toInt(), it[3].toInt() - 1, it[5].toInt() - 1, crates) }
 
     return crates.joinToString("") { it.last() }
 
 }
 
 private fun createCrates(): MutableList<MutableList<String>> {
-    val crates = mutableListOf(
-        mutableListOf<String>(),
-        mutableListOf<String>(),
-        mutableListOf<String>(),
-        mutableListOf<String>(),
-        mutableListOf<String>(),
-        mutableListOf<String>(),
-        mutableListOf<String>(),
-        mutableListOf<String>(),
-        mutableListOf<String>()
-    )
-
-    readInput("input.txt")
+    val read = readInput("day5-input.txt")
         .take(8)
-        .map { it.replace(" ", "") }
-        .map { it.split(",").map { it.replace("]", "").replace("[", "") } }
-        .forEach { letters ->
-            letters.forEachIndexed { index, letter ->
-                if (letter !== "") crates[index].add(
-                    0,
-                    letter
-                )
-            }
-        }
-    return crates
+        .map { it.windowed(3,4) }
+        .map { it.map {  it.replace("[", "").replace("]","").replace(" ","")}  }
+
+    return Matrix(read).rotateCW().values().map { it.filter { it != "" }.toMutableList() }.toMutableList()
 }
 
 fun makeMove2(amount: Int, from: Int, to: Int, crates: MutableList<MutableList<String>>) {
