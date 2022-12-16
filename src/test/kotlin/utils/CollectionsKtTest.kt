@@ -8,6 +8,21 @@ import java.time.ZoneOffset
 
 internal class CollectionsKtTest {
 
+
+    @Test
+    fun listLooping() {
+        assertEquals("B", listOf("A","B").getLooping(-1))
+        assertEquals("A", listOf("A","B").getLooping(-2))
+        assertEquals("A", listOf("A","B").getLooping(0))
+        assertEquals("B", listOf("A","B").getLooping(1))
+        assertEquals("A", listOf("A","B").getLooping(2))
+    }
+
+    @Test
+    fun decode() {
+        assertEquals("A", listOf("A","B").decode("X", listOf("X","Y")))
+    }
+
     @Test
     fun combinations() {
         assertEquals(

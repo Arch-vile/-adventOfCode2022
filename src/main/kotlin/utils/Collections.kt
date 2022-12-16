@@ -103,12 +103,27 @@ fun <T> Collection<T>.splitAfter(separator: T): List<List<T>> {
     return result
 }
 
+fun <E> List<E>.getLooping(index: Int): E {
+    if(index < 0) {
+        return this[(index+(-1 * index / size + 1)*size)%size]
+    } else {
+        return this[index % size]
+    }
+}
+
+/**
+ * Ceaser cipher i.e. simple substition mapping
+ * A,B  (this list, i.e the plain values)
+ * X,Y  (cipher list)
+ * listOf("A","B").decode("X", listOf("X","Y")) -> "A"
+ */
+fun <E> List<E>.decode(element: E, cipher: List<E>): E = this[cipher.indexOf(element)]
+
 class SortedLookup<K, V : Comparable<V>> {
     private val valueLookup = mutableMapOf<K, V>()
     private val sortedByValue =
         sortedSetOf<Pair<K, V>>(Comparator<Pair<K, V>>
-        { o1, o2 -> o1.second.compareTo(o2.second) }
-            .thenComparing { o1, o2 -> o1.first.hashCode().compareTo(o2.first.hashCode())  })
+        { o1, o2 -> o1.second.compareTo(o2.second) }.thenComparing { o1, o2 -> o1.first.hashCode().compareTo(o2.first.hashCode())  })
 
     fun add(key: K, value: V) {
         valueLookup[key] = value
