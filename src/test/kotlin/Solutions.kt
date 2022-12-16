@@ -35,8 +35,8 @@ class Solutions {
 
     @Test
     fun day5() {
-        assertEquals(1, day5.part1())
-        assertEquals(1, day5.part2())
+        assertEquals("QGTHFZBHV", day5.part1())
+        assertEquals("MGDMPSZTM", day5.part2())
     }
 
     @Test
