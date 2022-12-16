@@ -1,5 +1,8 @@
+package aoc
+
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+
 
 class Solutions {
 
@@ -43,6 +46,12 @@ class Solutions {
     fun day6() {
         assertEquals(1531, day6.part1())
         assertEquals(2518, day6.part2())
+    }
+
+    @Test
+    fun day7() {
+        assertEquals(1, day7.part1())
+        assertEquals(1, day7.part2())
     }
 
     @Test
