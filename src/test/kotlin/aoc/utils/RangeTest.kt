@@ -1,4 +1,4 @@
-package utils
+package aoc.utils
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue

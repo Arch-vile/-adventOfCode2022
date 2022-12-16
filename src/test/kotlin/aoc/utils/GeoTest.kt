@@ -1,4 +1,4 @@
-package utils
+package aoc.utils
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -13,7 +13,8 @@ internal class GeoTest {
                Point(1,1),
                Point(2,2),
            ),
-        pointsInLine(Line(Point(0,0), Point(2,2))))
+        pointsInLine(Line(Point(0,0), Point(2,2)))
+       )
 
         assertEquals(
             listOf(
@@ -21,7 +22,8 @@ internal class GeoTest {
                 Point(1,1),
                 Point(0,2),
             ),
-            pointsInLine(Line(Point(2,0), Point(0,2))))
+            pointsInLine(Line(Point(2,0), Point(0,2)))
+        )
     }
 
 }

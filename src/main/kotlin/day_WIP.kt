@@ -1,6 +1,6 @@
 package dayWIP
 
-import utils.readInput
+import aoc.utils.readInput
 
 fun part1(): Int {
     readInput("dayWIP-input.txt")

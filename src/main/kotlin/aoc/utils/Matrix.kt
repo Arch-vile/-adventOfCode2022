@@ -1,4 +1,4 @@
-package utils
+package aoc.utils
 
 import java.lang.Integer.min
 

@@ -1,8 +1,8 @@
 package day3
 
-import utils.intersect
-import utils.readInput
-import utils.splitMiddle
+import aoc.utils.intersect
+import aoc.utils.readInput
+import aoc.utils.splitMiddle
 
 fun part1(): Int {
     return readInput("day3-input.txt")

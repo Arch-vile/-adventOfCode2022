@@ -1,4 +1,4 @@
-package utils
+package aoc.utils
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -235,12 +235,14 @@ internal class MatrixTest {
             )
         )
 
-        current.combine(Matrix(
+        current.combine(
+            Matrix(
             listOf(
                 listOf("2", "3", "2"),
                 listOf("0", "0", "1"),
             )
-        )) { a, b -> (a.value.toString() + b.value).toInt()}
+        )
+        ) { a, b -> (a.value.toString() + b.value).toInt()}
 
         assertEquals(
             Matrix(
@@ -262,12 +264,14 @@ internal class MatrixTest {
             )
         )
 
-        current.combine(Matrix(
+        current.combine(
+            Matrix(
             listOf(
                 listOf("3", "2","9"),
                 listOf("0", "1","9"),
             )
-        ), Cursor(1,1)) { a, b -> (a.value.toString() + b.value).toInt()}
+        ), Cursor(1,1)
+        ) { a, b -> (a.value.toString() + b.value).toInt()}
 
         assertEquals(
             Matrix(

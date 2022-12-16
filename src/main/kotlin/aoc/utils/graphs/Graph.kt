@@ -1,6 +1,6 @@
-package utils.graphs
+package aoc.utils.graphs
 
-import utils.SortedLookup
+import aoc.utils.SortedLookup
 
 
 // Not immutable by any means

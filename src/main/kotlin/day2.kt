@@ -1,6 +1,8 @@
 package day2
 
-import utils.*
+import aoc.utils.decode
+import aoc.utils.getLooping
+import aoc.utils.readInput
 
 // S = scissors
 // R = rock

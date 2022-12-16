@@ -1,12 +1,12 @@
 package day6
 
-import utils.readInput
+import aoc.utils.readInput
+import aoc.utils.toList
 
 fun part1(): Int {
     val input = readInput("day6-input.txt")[0]
     val marker =
-        input
-            .toCharArray().toList()
+        input.toList()
             .windowed(4, 1)
             .first { it.intersect(it).size == 4 }
             .joinToString("")

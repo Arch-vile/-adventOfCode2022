@@ -1,4 +1,4 @@
-package utils
+package aoc.utils
 
 fun <T : Comparable<T>> closedRange(start: T, end: T): ClosedRange<T> {
    return start..end

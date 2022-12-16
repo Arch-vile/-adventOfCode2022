@@ -1,9 +1,9 @@
 package day4
 
-import utils.closedRange
-import utils.containsFully
-import utils.hasOverlap
-import utils.readInput
+import aoc.utils.closedRange
+import aoc.utils.containsFully
+import aoc.utils.hasOverlap
+import aoc.utils.readInput
 
 fun part1(): Int {
 return    readInput("day4-input.txt")

@@ -1,7 +1,7 @@
 package day5
 
-import utils.Matrix
-import utils.readInput
+import aoc.utils.Matrix
+import aoc.utils.readInput
 
 fun part1(): String {
     return solve(::makeMove)

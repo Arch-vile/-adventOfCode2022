@@ -1,7 +1,7 @@
 package day1
 
-import utils.readInput
-import utils.splitOn
+import aoc.utils.readInput
+import aoc.utils.splitOn
 
 fun part1(): Int {
     return readInput("day1-part1.txt")
