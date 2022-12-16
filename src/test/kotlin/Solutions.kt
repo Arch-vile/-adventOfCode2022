@@ -78,6 +78,11 @@ class Solutions {
         assertEquals("29703395016", day11.part2())
     }
     @Test
+    fun day12() {
+        assertEquals(437, day12.part1())
+        assertEquals(430, day12.part2())
+    }
+    @Test
     fun day_WIP() {
         assertEquals(1, dayWIP.part1())
         assertEquals(1, dayWIP.part2())

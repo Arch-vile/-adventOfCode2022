@@ -16,7 +16,21 @@ fun main() {
     part2()
 }
 
-fun part2(): Int {
+fun part1(): Long {
+    val map = Matrix(readInput("day12-input.txt")
+        .map { it.toList().map { Node(Square(it[0], false)) } })
+    val start = map.find { it.value.height == 'S' }!!
+    val end = map.find { it.value.height == 'E' }!!
+
+    start.value.value.height = 'a'
+    end.value.value.height = 'z'
+
+    buildGraph(map, start)
+
+    return shortestPath(start.value, end.value)!!
+}
+
+fun part2(): Long {
     val map = Matrix(readInput("day12-input.txt")
         .map { it.toList().map { Node(Square(it[0], false)) } })
     val start = map.find { it.value.height == 'S' }!!
@@ -38,24 +52,7 @@ fun part2(): Int {
         }
         .minOf { it }
 
-    println(anyShortest)
-    return 1;
-}
-
-fun part1(): Int {
-    val map = Matrix(readInput("day12-input.txt")
-        .map { it.toList().map { Node(Square(it[0], false)) } })
-    val start = map.find { it.value.height == 'S' }!!
-    val end = map.find { it.value.height == 'E' }!!
-
-    start.value.value.height = 'a'
-    end.value.value.height = 'z'
-
-    val graph = buildGraph(map, start)
-
-    val foo = shortestPath(start.value, end.value)
-    println(foo)
-    return 1;
+    return anyShortest
 }
 
 fun buildGraph(map: Matrix<Node<Square>>, current: Entry<Node<Square>>): Entry<Node<Square>> {
