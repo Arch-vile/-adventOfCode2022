@@ -2,7 +2,6 @@ package day3
 
 import utils.readInput
 import utils.splitMiddle
-import utils.splitOn
 
 fun part1(): Int {
     return readInput("day3-input.txt")
@@ -14,7 +13,12 @@ fun part1(): Int {
 }
 
 fun part2(): Int {
-    return 2;
+     return readInput("day3-input.txt")
+        .map { it.toCharArray().toList() }
+        .windowed(3,3)
+        .map{ it[0].intersect(it[1]).intersect(it[2])}
+        .map { it.first() }
+        .sumOf { priority(it) }
 }
 
 fun priority(it: Char): Int {
