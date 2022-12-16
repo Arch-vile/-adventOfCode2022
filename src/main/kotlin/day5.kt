@@ -16,7 +16,7 @@ fun solve(mover: (Int, Int, Int, MutableList<MutableList<String>>) -> Unit): Str
 
     val crates = createCrates()
 
-    readInput("input.txt")
+    readInput("day5-input.txt")
         .drop(10)
         .map { it.split(" ") }
         .forEach { mover(it[1].toInt(), it[3].toInt() - 1, it[5].toInt() - 1, crates) }

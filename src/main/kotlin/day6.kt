@@ -1,9 +1,9 @@
-package dayWIP
+package day6
 
 import utils.readInput
 
 fun part1(): Int {
-    readInput("dayWIP-input.txt")
+    readInput("day6-input.txt")
     return 1;
 }
 
