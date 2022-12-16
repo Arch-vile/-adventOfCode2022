@@ -2,9 +2,6 @@ package utils
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.io.File
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 
 internal class CollectionsKtTest {
 
@@ -21,6 +18,10 @@ internal class CollectionsKtTest {
     @Test
     fun decode() {
         assertEquals("A", listOf("A","B").decode("X", listOf("X","Y")))
+        assertEquals("A", listOf("A","B").decode(1, listOf(1,2)))
+
+        assertEquals("X", listOf("A","B").encode("A", listOf("X","Y")))
+        assertEquals(1, listOf("A","B").encode("A", listOf(1,2)))
     }
 
     @Test
@@ -78,71 +79,28 @@ internal class CollectionsKtTest {
     }
 
     @Test
+    fun sortedLookup_values_ordered() {
+        val foo = SortedLookup<String, Long>()
+        foo.add("a", 1)
+        foo.add("b", 3)
+        foo.add("c", 2)
+
+        assertEquals(listOf(1,2), listOf(1,2))
+        // Damn not sure why assertting lists did not work here. well cast to string
+        assertEquals( "1, 2, 3" ,foo.sortedByValue().toList().map { it.second }.joinToString())
+    }
+    @Test
     fun sortedLookup_same_value_for_many_keys() {
         val foo = SortedLookup<String, Long>()
         foo.add("foo", 1)
         foo.add("bar", 1)
 
         assertEquals(
-            setOf("foo", "bar"),
-            foo.sortedSequence().map { it.first }
+            // Values same, sorted by key
+            listOf("bar","foo" ),
+            foo.sortedByValue().map { it.first }.toList()
         )
     }
 
-    @Test
-    fun foo() {
-
-        val output =
-            File("/Users/mikko.ravimo@futurice.com/temp/papertrail/jeddahFinalizations_nice.log").bufferedWriter()
-
-        var gameId = ""
-        fun out(message: String) {
-//            println(message)
-            output.write("$gameId $message")
-            output.write("\n")
-        }
-
-        val lines = read("/Users/mikko.ravimo@futurice.com/temp/papertrail/jeddahFinalizations.log")
-
-        var previous = ""
-        for (line in lines.filter { !it.contains("scores_gameActions") }) {
-
-            if (line.contains("Finalization for game")) {
-                val gameLine = line.split(" ")
-                gameId = gameLine[9]
-            }
-
-            if (line.contains("gameActionCreatedAt")) {
-                if (previous.contains("GameFinalizationActionDto") && !previous.contains("StatGameFin")) {
-                    val timeString =
-                        line.split(" ").dropLast(1).last().replace(",", "").split("m")[1].substring(
-                            0,
-                            13
-                        );
-                    val datetime = LocalDateTime.ofEpochSecond(
-                        timeString.toLong() / 1000,
-                        0,
-                        ZoneOffset.ofHours(2)
-                    )
-                    val time = datetime.toLocalTime()
-                    out("$line $time")
-                }
-            }
-            else {
-                if(!line.contains("gameActionCreatedAt")) {
-                    if (line.contains("debug") && line.contains("seen within event"))
-                        out(line)
-                    if (line.contains("Successfully exported game") || line.contains("Marked"))
-                        out(line)
-                }
-            }
-
-
-            previous = line
-
-        }
-
-
-    }
 
 }

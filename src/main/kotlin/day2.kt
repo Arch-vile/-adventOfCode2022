@@ -44,13 +44,13 @@ fun part2(): Int {
             )
         }
         .sumOf { calculateScore(it) }
-    return 1
 }
 
 fun calculateScore(it: Pair<String, String>): Int {
     val shapeScore = suites.indexOf(it.second) + 1
-    val ourSelection = suites.indexOf(it.second)
     val wasDraw = it.first == it.second
+
+    val ourSelection = suites.indexOf(it.second)
     val wasWin = !wasDraw &&
             suites.getLooping(ourSelection - 1) == it.first
 

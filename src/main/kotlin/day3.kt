@@ -1,5 +1,6 @@
 package day3
 
+import utils.intersect
 import utils.readInput
 import utils.splitMiddle
 
@@ -16,7 +17,7 @@ fun part2(): Int {
      return readInput("day3-input.txt")
         .map { it.toCharArray().toList() }
         .windowed(3,3)
-        .map{ it[0].intersect(it[1]).intersect(it[2])}
+        .map{ intersect(it) }
         .map { it.first() }
         .sumOf { priority(it) }
 }

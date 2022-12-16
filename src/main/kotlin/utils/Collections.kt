@@ -86,6 +86,8 @@ fun <T> Collection<T>.splitOn(separator: T): List<List<T>> {
 }
 
 fun <T> List<T>.splitMiddle(): Pair<List<T>,List<T>> {
+    if(size % 2 != 0)
+        throw Error("Cannot split middle list of size $size")
    return Pair(subList(0,size/2),subList(size/2,size))
 }
 
@@ -120,8 +122,13 @@ fun <E> List<E>.getLooping(index: Int): E {
  * X,Y  (cipher list)
  * listOf("A","B").decode("X", listOf("X","Y")) -> "A"
  */
-fun <E> List<E>.decode(element: E, cipher: List<E>): E = this[cipher.indexOf(element)]
+fun <E,C> List<E>.decode(element: C, cipher: List<C>): E = this[cipher.indexOf(element)]
+fun <E,C> List<E>.encode(element: E, cipher: List<C>): C = cipher[this.indexOf(element)]
 
+/**
+ * Optimization tool
+ * Container storing key/value pairs providing fast value access and ordered by value
+ */
 class SortedLookup<K, V : Comparable<V>> {
     private val valueLookup = mutableMapOf<K, V>()
     private val sortedByValue =
@@ -144,7 +151,7 @@ class SortedLookup<K, V : Comparable<V>> {
 
     fun get(key: K) = valueLookup[key]
 
-    fun sortedSequence() = sortedByValue.asSequence()
+    fun sortedByValue() = sortedByValue.asSequence()
 
     fun size() = valueLookup.size
 

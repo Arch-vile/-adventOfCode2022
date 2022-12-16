@@ -68,7 +68,7 @@ fun <T> shortestPath(start: Node<T>, target: Node<T>): Long? {
             return removed.second
         }
         else {
-            current = unvisitedNodes.sortedSequence()
+            current = unvisitedNodes.sortedByValue()
                 .filter { unvisitedNodes.containsKey(it.first) }
                 .first().first
         }
