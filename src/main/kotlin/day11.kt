@@ -1,35 +1,49 @@
 package day11
 
 import aoc.utils.*
+import java.math.BigInteger
 
 data class Monkey(
     val index: Int,
     var inspectionCount: Int,
-    val worryLevels: MutableList<Int>,
-    val op: (Int) -> Int,
+    val worryLevels: MutableList<BigInteger>,
+    val op: (BigInteger) -> BigInteger,
     val divider: Int,
     val successTarget: Int,
     val failureTarget: Int
 )
 
-data class Move(val targetMonkey: Int, val worryLevel: Int)
+data class Move(val targetMonkey: Int, val worryLevel: BigInteger)
 
-fun main() {
-    part1()
+fun part1(): String {
+    return solve(20, 3)
 }
 
-fun part1(): Int {
+fun part2(): String {
+    return solve(10000)
+}
+
+fun solve(rounds: Int, divider: Int? = null): String {
     val monkeys =
         readInput("day11-input.txt").windowed(6, 7).map { monkeyFromString(it) }.associateBy { it.index }
 
-    repeat(20) {
+    val rootDivider = monkeys.values
+        .map { it.divider.toBigInteger() }
+        .reduce { acc, v -> acc * v }
+
+    repeat(rounds) {
         (0..monkeys.size - 1).map { index ->
             val monkey = monkeys[index]!!
             val moves = monkey.worryLevels
                 .map { level ->
                     monkey.inspectionCount++
-                    val newLevel = monkey.op.invoke(level) / 3
-                    if (newLevel % monkey.divider == 0) {
+                    var newLevel = monkey.op.invoke(level)
+                    if (divider != null)
+                        newLevel = newLevel.divide(divider.toBigInteger())
+                    else if (newLevel > rootDivider)
+                        newLevel = newLevel.mod(rootDivider)
+
+                    if (newLevel.mod(monkey.divider.toBigInteger()).equals(0.toBigInteger())) {
                         Move(monkey.successTarget, newLevel)
                     } else {
                         Move(monkey.failureTarget, newLevel)
@@ -45,18 +59,16 @@ fun part1(): Int {
 
     val result = monkeys.values.sortedBy { it.inspectionCount }.reversed()
         .take(2)
-        .map { it.inspectionCount }
-        .reduce{ acc, v -> acc*v}
-
-    println(result)
-    return result;
+        .map { it.inspectionCount.toBigInteger() }
+        .reduce { acc, v -> acc * v }
+    return result.toString();
 }
 
 private fun monkeyFromString(it: List<String>) = Monkey(
     it[0].secondPart().replace(":", "").toInt(),
     0,
     it[1].toList().breakAfter { it == ":" }[1].joinToString("").replace(" ", "").split(",").map { it.toInt() }
-        .toMutableList(),
+        .map { it.toBigInteger() }.toMutableList(),
     operationFrom(it[2]),
     testFromString(it[3]),
     it[4].split(" ").last().toInt(),
@@ -68,7 +80,7 @@ private fun testFromString(it: String): Int {
     else throw Error("Unknown test $it")
 }
 
-fun operationFrom(input: String): (Int) -> Int {
+fun operationFrom(input: String): (BigInteger) -> BigInteger {
     val split = input.split(" ")
     val leftOperand = split[5]
     val rightOperand = split[7]
@@ -76,8 +88,8 @@ fun operationFrom(input: String): (Int) -> Int {
 
     return if (leftOperand == "old") {
         when (operator) {
-            "+" -> { a -> a + rightOperand.toInt() }
-            "*" -> { a -> a * rightOperand.toInt() }
+            "+" -> { a -> a + rightOperand.toBigInteger() }
+            "*" -> { a -> a * rightOperand.toBigInteger() }
             "raise2" -> { a -> a * a }
             else -> throw Error("unknown operator $operator")
         }
@@ -86,6 +98,3 @@ fun operationFrom(input: String): (Int) -> Int {
     }
 }
 
-fun part2(): Int {
-    return 1;
-}
