@@ -6,22 +6,36 @@ data class Entry<T>(val cursor: Cursor, val value: T)
 data class Size(val width: Int, val height: Int)
 data class Cursor(val x: Int, val y: Int)
 
-class Matrix<T>(input: List<List<T>>) {
+class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
 
     private val data: MutableList<MutableList<Entry<T>>> = mutableListOf()
 
     init {
         for(y in input.indices) {
-            val columns = input[0].size
+            val maxColumns = maxColumnCount(input)
             val row = mutableListOf<Entry<T>>()
             data.add(row)
-            for(x in 0 until columns) {
-               if(input[y].size != columns)
-                   throw Error("all rows must have equal amount of columns")
-               row.add(Entry(Cursor(x,y),input[y][x]))
+            for(x in 0 until maxColumns) {
+               row.add(Entry(Cursor(x,y), valueOrFilled(input, y, x, filler)))
             }
         }
     }
+
+    private fun valueOrFilled(input: List<List<T>>, y: Int, x: Int, filler: ((x: Int, y: Int) -> T)?): T {
+
+        if(input[y].size <= x) {
+           if(filler == null) {
+               throw Error("all rows must have equal amount of columns or you must give a filler function")
+           } else {
+               return filler(x,y)
+           }
+        }
+
+        return input[y][x]
+    }
+
+    private fun maxColumnCount(input: List<List<T>>) = input.maxOf { it.size }
+
 
     constructor(width: Long, height: Long, init: (Int,Int) -> T) : this(initialize(width, height, init))
 

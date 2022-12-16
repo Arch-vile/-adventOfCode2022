@@ -280,4 +280,25 @@ internal class MatrixTest {
         )
     }
 
+    @Test
+    fun readWithFilling() {
+       val matrix = Matrix(
+           listOf(
+               listOf(1, 2),
+               listOf(3, 5, 6),
+           ),
+           { x,y -> 666 }
+       )
+
+        assertEquals(
+            Matrix(
+                listOf(
+                    listOf(1, 2, 666),
+                    listOf(3, 5, 6),
+                )
+            ),
+            matrix
+        )
+    }
+
 }
