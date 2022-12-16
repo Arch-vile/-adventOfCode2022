@@ -134,6 +134,7 @@ internal class GraphTest {
         assertEquals(listOf(a,c,d), aoc.utils.graphs.shortestPath(a,d))
     }
 
+    // Fix: Do not consider unvisited nodes when backtracking the path
     @Test
     fun shortestPath_Regression() {
         var a = Node('a')
