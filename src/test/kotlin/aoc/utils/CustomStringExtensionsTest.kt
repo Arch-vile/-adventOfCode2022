@@ -14,6 +14,14 @@ internal class CustomStringExtensionsTest {
     }
 
     @Test
+    fun findInts() {
+        assertEquals(
+            listOf(1,20,30,50,-4, 3),
+            "  1 fsod 20,30 f50 a-4f 003".findInts()
+        )
+    }
+
+    @Test
     fun second_as_int() {
         assertEquals(2,"1 2".secondAsInt())
         assertEquals(2,"1,2".secondAsInt(","))

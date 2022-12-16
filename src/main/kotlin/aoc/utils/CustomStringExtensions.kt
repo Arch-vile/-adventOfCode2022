@@ -14,13 +14,13 @@ fun String.secondAsInt(delim: String = " ") = secondPart(delim).toInt()
 fun String.thirdAsInt(delim: String = " ") = thirdPart(delim).toInt()
 fun String.fourthAsInt(delim: String = " ") = fourthPart(delim).toInt()
 
-fun String.findFirstInt(delim: String = " ") = allInts(this,delim)[0]
-fun String.findSecondInt(delim: String = " ") = allInts(this,delim)[1]
-fun String.findThirdInt(delim: String = " ") = allInts(this,delim)[2]
-fun String.findFourthInt(delim: String = " ") = allInts(this,delim)[3]
+fun String.findFirstInt() = findInts()[0]
+fun String.findSecondInt() = findInts()[1]
+fun String.findThirdInt() = findInts()[2]
+fun String.findFourthInt() = findInts()[3]
 
-fun allInts(from: String, delim: String): List<Int> {
-    return from.split(" ").filter { it.matches("\\d*".toRegex()) }.map { it.toInt() }
+fun String.findInts(): List<Int> {
+    return findGroups("""(-?\d+)""".toRegex()).map { it.toInt()}
 }
 
 fun String.findGroups(regex: Regex): List<String> {
@@ -31,3 +31,4 @@ fun String.findGroups(regex: Regex): List<String> {
         .flatten()
         .toList()
 }
+

@@ -25,7 +25,10 @@ fun part2(): String {
 
 fun solve(rounds: Int, divider: Int? = null): String {
     val monkeys =
-        readInput("day11-input.txt").windowed(6, 7).map { monkeyFromString(it) }.associateBy { it.index }
+        readInput("day11-input.txt")
+            .windowed(6, 7)
+            .map { monkeyFromString(it) }
+            .associateBy { it.index }
 
     val rootDivider = monkeys.values
         .map { it.divider.toBigInteger() }
@@ -65,18 +68,17 @@ fun solve(rounds: Int, divider: Int? = null): String {
 }
 
 private fun monkeyFromString(it: List<String>) = Monkey(
-    it[0].secondPart().replace(":", "").toInt(),
+    it[0].findFirstInt(),
     0,
-    it[1].toList().breakAfter { it == ":" }[1].joinToString("").replace(" ", "").split(",").map { it.toInt() }
-        .map { it.toBigInteger() }.toMutableList(),
+    it[1].findInts().map { it.toBigInteger() }.toMutableList(),
     operationFrom(it[2]),
     testFromString(it[3]),
-    it[4].split(" ").last().toInt(),
-    it[5].split(" ").last().toInt(),
+    it[4].findFirstInt(),
+    it[5].findFirstInt(),
 )
 
 private fun testFromString(it: String): Int {
-    if (it.contains("divisible by")) return it.split(" ").last().toInt()
+    if (it.contains("divisible by")) return it.findFirstInt()
     else throw Error("Unknown test $it")
 }
 
