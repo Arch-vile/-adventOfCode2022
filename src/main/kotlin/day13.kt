@@ -1,4 +1,4 @@
-package dayWIP
+package day13
 
 import aoc.utils.readInput
 
@@ -7,7 +7,7 @@ fun main() {
 }
 
 fun part1(): Int {
-    readInput("dayWIP-input.txt")
+    readInput("test.txt")
     return 1;
 }
 
