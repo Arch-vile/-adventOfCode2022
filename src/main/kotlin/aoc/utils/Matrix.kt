@@ -8,6 +8,7 @@ data class Cursor(val x: Int, val y: Int) {
     fun move(amount: Int) = copy(x = x + amount,y = y + amount)
     fun moveX(amount: Int) = copy(x = x + amount)
     fun moveY(amount: Int) = copy(y = y + amount)
+    fun move(other: Cursor) = copy(x = x + other.x, y = y + other.y)
 }
 
 class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
@@ -44,7 +45,7 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
 
 
     fun get(x: Int, y: Int) = data[y][x]
-
+    fun get(pos: Cursor) = data[pos.y][pos.x]
 
     fun find(value: T): Entry<T>? {
         for (y in 0 until height()) {
@@ -169,12 +170,10 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     fun getRelativeAt(cursor: Cursor, getRelative: List<Cursor>): List<Entry<T>> {
         return getRelative
             .map {
-                val relY = cursor.y + it.y
-                val relX = cursor.x + it.x
-                Pair(relX, relY)
+                cursor.move(it)
             }
-            .filter { it.second < data.size && it.second >= 0 && it.first < data[0].size && it.first >= 0 }
-            .map { data[it.second][it.first] }
+            .filter { it.y < data.size && it.y >= 0 && it.x < data[0].size && it.x >= 0 }
+            .map { get(it) }
     }
 
     fun flipHorizontal(): Matrix<T> = Matrix(data.reversed().map { it.map { it.value } })
