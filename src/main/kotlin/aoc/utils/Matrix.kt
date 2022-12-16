@@ -4,7 +4,11 @@ import java.lang.Integer.min
 
 data class Entry<T>(val cursor: Cursor, val value: T)
 data class Size(val width: Int, val height: Int)
-data class Cursor(val x: Int, val y: Int)
+data class Cursor(val x: Int, val y: Int) {
+    fun move(amount: Int) = copy(x = x + amount,y = y + amount)
+    fun moveX(amount: Int) = copy(x = x + amount)
+    fun moveY(amount: Int) = copy(y = y + amount)
+}
 
 class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
 
@@ -37,7 +41,6 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     }
 
     private fun maxColumnCount(input: List<List<T>>) = input.maxOf { it.size }
-
 
 
     fun get(x: Int, y: Int) = data[y][x]
@@ -79,15 +82,19 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
      *
      * Fails if out of bounds unless a fill value is given.
      */
-    fun tile(start: Cursor, end: Cursor, fill: T? =null): Matrix<T> {
+    fun tile(start: Cursor, end: Cursor, fill: T? = null): Matrix<T> {
         return Matrix((start.y..end.y).map { y ->
             (start.x..end.x).map { x ->
-                if(fill == null || isInBounds(Cursor(x,y)))
+                if (fill == null || isInBounds(Cursor(x, y)))
                     data[y][x].value
                 else
                     fill
             }
         })
+    }
+
+    fun tileAround(center: Cursor, radius: Int, fill: T? = null): Matrix<T> {
+        return tile(center.move(radius*-1), center.move(radius), fill)
     }
 
 
@@ -213,12 +220,12 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
      * out of bounds or null is returned from router
      */
     fun trace(startFrom: Cursor, router: (Cursor) -> Cursor?): List<Entry<T>> {
-        if(!isInBounds(startFrom))
+        if (!isInBounds(startFrom))
             throw Error("Start is out of bounds $startFrom")
 
         val route = mutableListOf<Entry<T>>()
         var next = router(startFrom)
-        while (next != null && isInBounds(next) ) {
+        while (next != null && isInBounds(next)) {
             route.add(get(next.x, next.y))
             next = router(next)
         }
@@ -241,7 +248,7 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
         }
 
         fun fromString(content: List<String>): Matrix<String> {
-            return Matrix(content.map{ it.toList()})
+            return Matrix(content.map { it.toList() })
         }
     }
 

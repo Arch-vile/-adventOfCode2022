@@ -52,6 +52,37 @@ internal class MatrixTest {
     }
 
     @Test
+    fun tile_around() {
+        val source = matrix(
+            "123456",
+            "7890ab",
+            "defghi",
+            "jklmno"
+        )
+
+        assertEquals(
+            matrix(
+                "890",
+                "efg",
+                "klm"
+            ),
+            source.tileAround(Cursor(2, 2), 1)
+        )
+
+        assertEquals(
+            matrix(
+                "0ab--",
+                "ghi--",
+                "mno--",
+                "-----",
+                "-----",
+            ),
+            source.tileAround(Cursor(5, 3), 2,"-")
+        )
+
+    }
+
+    @Test
     fun tiles_window() {
         val source = Matrix(
             listOf(
@@ -344,12 +375,6 @@ internal class MatrixTest {
             else null
         }.map { it.value })
 
-    }
-
-    @Test
-    fun toStringTest() {
-        val m = Matrix(20, 20) { x, y -> "0" }
-        println(m.visualize(""))
     }
 
     fun matrix(vararg lines: String): Matrix<String> {
