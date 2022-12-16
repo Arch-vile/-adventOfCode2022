@@ -10,18 +10,24 @@ data class Sensor(val location: Cursor, val beacon: Cursor) {
 }
 
 fun main() {
-    val sensors = readInput("test.txt")
+    val rowUnderInspection = 2000000
+    val sensors = readInput("day15-input.txt")
         .map { it.findInts() }
         .map { Sensor(Cursor(it[0],it[1]), Cursor(it[2], it[3])) }
 
     val minimumX = sensors.map { it.location.x-it.distance() }.minOrNull()!!
     val maximumX = sensors.map { it.location.x+it.distance() }.maxOrNull()!!
 
-    val uncoveredPositions = (minimumX..maximumX).filter{ x ->
-        val coveredBySensor = sensors.firstOrNull { sensor -> sensor.covers(Cursor(x,10)) }
-        coveredBySensor == null
+    val coveredPositions = (minimumX..maximumX).filter{ x ->
+        val coveredBySensor = sensors.firstOrNull { sensor -> sensor.covers(Cursor(x,rowUnderInspection)) }
+        coveredBySensor != null
     }
-    println(uncoveredPositions)
+
+    val beaconsOnRow = sensors.map { it.beacon }.filter { it.y == rowUnderInspection }.toSet().size
+    val sensorsOnRow = sensors.map { it.location }.filter { it.y === rowUnderInspection }.toSet().size
+
+    val ruledOutPositions = coveredPositions.size-beaconsOnRow-sensorsOnRow
+    println(ruledOutPositions)
 }
 
 fun part2(): Int {
