@@ -2,6 +2,7 @@ package aoc.utils
 
 import java.lang.Integer.min
 import java.util.function.Predicate
+import kotlin.math.abs
 
 data class Entry<T>(val cursor: Cursor, val value: T)
 data class Size(val width: Int, val height: Int)
@@ -11,6 +12,9 @@ data class Cursor(val x: Int, val y: Int) {
     fun moveY(amount: Int) = copy(y = y + amount)
     fun move(other: Cursor) = copy(x = x + other.x, y = y + other.y)
     fun minus(other: Cursor) = Cursor(x-other.x, y-other.y)
+    // Manhattan distance
+    fun distance(other: Cursor) = abs(x-other.x) + abs(y-other.y)
+
 }
 
 class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
