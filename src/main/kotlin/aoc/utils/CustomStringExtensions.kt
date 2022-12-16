@@ -22,3 +22,12 @@ fun String.findFourthInt(delim: String = " ") = allInts(this,delim)[3]
 fun allInts(from: String, delim: String): List<Int> {
     return from.split(" ").filter { it.matches("\\d*".toRegex()) }.map { it.toInt() }
 }
+
+fun String.findGroups(regex: Regex): List<String> {
+    return regex.findAll(this)
+        .map { it.groupValues }
+        .filter { it.size > 1 }
+        .map { it.drop(1) }
+        .flatten()
+        .toList()
+}

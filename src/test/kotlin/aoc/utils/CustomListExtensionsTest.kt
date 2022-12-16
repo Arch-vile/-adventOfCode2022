@@ -72,4 +72,26 @@ class CustomListExtensionsTest {
         )
     }
 
+    @Test
+    fun findSection() {
+        Assertions.assertEquals(
+            listOf(
+                listOf(3, 3),
+                listOf(3, 3, 4),
+                listOf(3, 4),
+                listOf(3, 4, 5)
+            ),
+            listOf(1, 2, 3, 3, 4, 5, 6, 7).findSections(2..3) { it.section.first() == 3  }
+
+        )
+
+        Assertions.assertEquals(
+            listOf(
+                listOf(3, 4),
+                listOf(3, 4, 5)
+            ),
+            listOf(1, 2, 3, 3, 4, 5, 6, 7).findSections(2..3) { it.section.first() == 3 && it.before.last() == 3 }
+
+        )
+    }
 }

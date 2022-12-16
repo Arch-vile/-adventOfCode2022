@@ -51,8 +51,28 @@ fun <T> permutations(set: Set<T>): Set<List<T>> {
     return allPermutations(set.toList())
 }
 
+data class SectionCandidate<T>(val section: List<T>, val before: List<T>, val after: List<T> )
 
-fun <T> List<T>.findSections(sectionSize: ClosedRange<Int>, matcher: (List<T>) -> Boolean): List<List<T>> {
-  return listOf()
+/**
+ * Find sections within given size limits that satisfy the condition matcher
+ */
+fun <T> List<T>.findSections(sectionSize: ClosedRange<Int>, matcher: (SectionCandidate<T>) -> Boolean): List<List<T>> {
+
+    val sections = mutableListOf<List<T>>()
+
+    for (i in indices) {
+        var sliceSize = sectionSize.start
+        while (sectionSize.contains(sliceSize) && i+sliceSize<size) {
+            val section = subList(i, i + sliceSize)
+            val before = subList(0,i)
+            val after = subList(i+sliceSize,size)
+            if(matcher(SectionCandidate(section,before,after)))
+                sections.add(section)
+            sliceSize++
+        }
+    }
+
+
+    return sections
 }
 

@@ -1,13 +1,17 @@
 package aoc.aoc.utils
 
-import aoc.utils.findFirstInt
-import aoc.utils.findSecondInt
-import aoc.utils.findSections
-import aoc.utils.secondAsInt
+import aoc.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class CustomStringExtensionsTest {
+
+    @Test
+    fun findGroups() {
+        assertEquals(
+            listOf("3","4"),
+        "kjasdf age 3 fla age 4".findGroups("""age (\d+)""".toRegex()))
+    }
 
     @Test
     fun second_as_int() {
@@ -30,18 +34,5 @@ internal class CustomStringExtensionsTest {
         )
     }
 
-    @Test
-    fun findSection() {
-        assertEquals(
-            listOf(
-                listOf(3,3),
-                listOf(3,3,4),
-                listOf(3,4),
-                listOf(3,4,5)
-            ),
-            listOf(1,2,3,3,4,5,6,7).findSections(2..3) { it -> it.first() == 3}
-
-        )
-    }
 
 }
