@@ -1,5 +1,4 @@
 import org.junit.jupiter.api.Test
-import java.lang.Math.random
 import kotlin.test.assertEquals
 
 class Solutions {
@@ -11,9 +10,9 @@ class Solutions {
     }
 
     @Test
-    fun day1(){
+    fun day1() {
         assertEquals(69501, day1.part1())
+        assertEquals(202346, day1.part2())
     }
-
 
 }
