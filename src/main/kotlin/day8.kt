@@ -7,22 +7,26 @@ import aoc.utils.toList
 data class Tree(val name: String, val hight: Int)
 
 fun part1(): Int {
-    val input = readInput("day8practice-input.txt")
+    val input = readInput("day8-input.txt")
         .map { it.toList().map { it.toInt() } }
 
-    val trees = input.mapIndexed { y, row -> row.mapIndexed { x, column -> Tree("$y$x", column)  }  }
+
+    val treesO = input.mapIndexed { y, row -> row.mapIndexed { x, column -> Tree("$y,$x", column)  }  }
+
+   val trees = Matrix(treesO).values();
 
     val inLines = countInLines(trees)
-    println(inLines)
+//    println(inLines)
 
     val inRows = countInLines(Matrix(trees).rotateCW().values())
-    println(inRows)
+//    println(inRows)
 
-    val combined = inLines.union(inRows)
+    val combined = inLines.union(inRows).toList().map { it.name }.sorted()
     println(combined)
 
     // 1121 not correct
     // 1531 not correct
+    // 1125 not correct
     return combined.size + input.size*2 + (input[0].size-2)*2;
 }
 
