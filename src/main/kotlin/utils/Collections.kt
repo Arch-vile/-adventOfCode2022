@@ -77,6 +77,18 @@ fun <K, V> merge(map1: Map<K, V>, map2: Map<K, V>, merger: (V, V) -> V): Map<K, 
     return mutable.toMap()
 }
 
+/**
+ * Split to sublists after given delimeter. Delimeter is not included in sublists.
+ */
+fun <T> Collection<T>.splitOn(separator: T): List<List<T>> {
+   return this.splitAfter(separator)
+        .map { it -> if(it.last() == separator) it.dropLast(1) else it }
+}
+
+
+/**
+ * Split to sublists after given delimeter. Delimeter is included in the preceding sublist.
+ */
 fun <T> Collection<T>.splitAfter(separator: T): List<List<T>> {
     val result = mutableListOf<MutableList<T>>()
 
