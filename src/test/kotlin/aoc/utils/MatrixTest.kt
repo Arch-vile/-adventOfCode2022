@@ -237,12 +237,12 @@ internal class MatrixTest {
 
         current.combine(
             Matrix(
-            listOf(
-                listOf("2", "3", "2"),
-                listOf("0", "0", "1"),
+                listOf(
+                    listOf("2", "3", "2"),
+                    listOf("0", "0", "1"),
+                )
             )
-        )
-        ) { a, b -> (a.value.toString() + b.value).toInt()}
+        ) { a, b -> (a.value.toString() + b.value).toInt() }
 
         assertEquals(
             Matrix(
@@ -266,12 +266,12 @@ internal class MatrixTest {
 
         current.combine(
             Matrix(
-            listOf(
-                listOf("3", "2","9"),
-                listOf("0", "1","9"),
-            )
-        ), Cursor(1,1)
-        ) { a, b -> (a.value.toString() + b.value).toInt()}
+                listOf(
+                    listOf("3", "2", "9"),
+                    listOf("0", "1", "9"),
+                )
+            ), Cursor(1, 1)
+        ) { a, b -> (a.value.toString() + b.value).toInt() }
 
         assertEquals(
             Matrix(
@@ -280,19 +280,19 @@ internal class MatrixTest {
                     listOf(3, 53, 62),
                 )
             ),
-           current
+            current
         )
     }
 
     @Test
     fun readWithFilling() {
-       val matrix = Matrix(
-           listOf(
-               listOf(1, 2),
-               listOf(3, 5, 6),
-           ),
-           { x,y -> 666 }
-       )
+        val matrix = Matrix(
+            listOf(
+                listOf(1, 2),
+                listOf(3, 5, 6),
+            ),
+            { x, y -> 666 }
+        )
 
         assertEquals(
             Matrix(
@@ -306,12 +306,48 @@ internal class MatrixTest {
     }
 
     @Test
-    fun getStraightLines() {
-        TODO("ability to get elements starting from given element and going to a direction , UP DOWN CROSS")
-    }
-
-    @Test
     fun getSurrounding() {
         TODO("get tile around the given point with radius, optionally filling if out of bounds")
     }
+
+    @Test
+    fun trace() {
+        val matrix = Matrix(
+            listOf(
+                listOf(10, 11, 12, 13, 14, 15, 16),
+                listOf(20, 21, 22, 23, 24, 25, 26),
+                listOf(30, 31, 32, 33, 34, 35, 36),
+                listOf(40, 41, 42, 43, 44, 45, 46),
+            )
+        )
+
+        assertEquals(
+            listOf(20, 30, 40),
+            matrix.trace(Cursor(0, 0)) { current ->
+                Cursor(current.x, current.y + 1)
+            }.map { it.value }
+        )
+
+        assertEquals(
+            listOf(21, 32, 43),
+            matrix.trace(Cursor(0, 0)) { current ->
+                Cursor(current.x+1, current.y + 1)
+            }.map { it.value }
+        )
+
+        var count = 0
+        assertEquals(
+            listOf(20, 30),
+            matrix.trace(Cursor(0, 0)) { current ->
+                count++
+                if(count <= 2)
+                    Cursor(current.x, current.y + 1)
+                else
+                    null
+            }.map { it.value }
+        )
+
+    }
+
+
 }

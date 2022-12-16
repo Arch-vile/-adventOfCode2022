@@ -11,24 +11,24 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     private val data: MutableList<MutableList<Entry<T>>> = mutableListOf()
 
     init {
-        for(y in input.indices) {
+        for (y in input.indices) {
             val maxColumns = maxColumnCount(input)
             val row = mutableListOf<Entry<T>>()
             data.add(row)
-            for(x in 0 until maxColumns) {
-               row.add(Entry(Cursor(x,y), valueOrFilled(input, y, x, filler)))
+            for (x in 0 until maxColumns) {
+                row.add(Entry(Cursor(x, y), valueOrFilled(input, y, x, filler)))
             }
         }
     }
 
     private fun valueOrFilled(input: List<List<T>>, y: Int, x: Int, filler: ((x: Int, y: Int) -> T)?): T {
 
-        if(input[y].size <= x) {
-           if(filler == null) {
-               throw Error("all rows must have equal amount of columns or you must give a filler function")
-           } else {
-               return filler(x,y)
-           }
+        if (input[y].size <= x) {
+            if (filler == null) {
+                throw Error("all rows must have equal amount of columns or you must give a filler function")
+            } else {
+                return filler(x, y)
+            }
         }
 
         return input[y][x]
@@ -37,7 +37,7 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     private fun maxColumnCount(input: List<List<T>>) = input.maxOf { it.size }
 
 
-    constructor(width: Long, height: Long, init: (Int,Int) -> T) : this(initialize(width, height, init))
+    constructor(width: Long, height: Long, init: (Int, Int) -> T) : this(initialize(width, height, init))
 
     fun get(x: Int, y: Int) = data[y][x]
 
@@ -53,7 +53,7 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     }
 
     fun replace(current: Entry<T>, value: T) {
-        data[current.cursor.y][current.cursor.x] = current.copy(value=value)
+        data[current.cursor.y][current.cursor.x] = current.copy(value = value)
     }
 
     fun replace(x: Int, y: Int, newValue: (Entry<T>) -> T) {
@@ -79,7 +79,7 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     fun tile(start: Point, end: Point): Matrix<T> {
         return Matrix((start.y..end.y).map { y ->
             (start.x..end.x).map { x ->
-               data[y.toInt()][x.toInt()].value
+                data[y.toInt()][x.toInt()].value
             }
         })
     }
@@ -96,14 +96,14 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
         val slidingY = (0 until data.size).windowed(size.height, step.height, partial)
         return slidingY
             .flatMap { yCoords ->
-               slidingX.map { xCoords ->
-                   val data = yCoords.map { y ->
-                      xCoords.map { x ->
-                          data[y][x].value
-                      }
-                   }
-                   Matrix(data)
-               }
+                slidingX.map { xCoords ->
+                    val data = yCoords.map { y ->
+                        xCoords.map { x ->
+                            data[y][x].value
+                        }
+                    }
+                    Matrix(data)
+                }
             }
     }
 
@@ -137,12 +137,12 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     fun width() = data[0].size
 
     override fun equals(other: Any?): Boolean {
-        return if(other is Matrix<*>) {
-            if(data.size != other.data.size)
+        return if (other is Matrix<*>) {
+            if (data.size != other.data.size)
                 return false
 
             val mismatch = data.asSequence()
-                .mapIndexed { index, row -> row.equals(other.data[index])  }
+                .mapIndexed { index, row -> row.equals(other.data[index]) }
                 .filter { !it }
                 .firstOrNull()
 
@@ -155,8 +155,8 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     fun getRelativeAt(cursor: Cursor, getRelative: List<Cursor>): List<Entry<T>> {
         return getRelative
             .map {
-                val relY = cursor.y+it.y
-                val relX =cursor.x+it.x
+                val relY = cursor.y + it.y
+                val relX = cursor.x + it.x
                 Pair(relX, relY)
             }
             .filter { it.second < data.size && it.second >= 0 && it.first < data[0].size && it.first >= 0 }
@@ -168,7 +168,7 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     fun flipVertical(): Matrix<T> = Matrix(data.map { it.reversed().map { it.value } })
 
     fun <V> combine(other: Matrix<V>, combiner: (Entry<T>, Entry<V>) -> T) =
-        combine(other, Cursor(0,0), combiner)
+        combine(other, Cursor(0, 0), combiner)
 
     // Combine values in given matrix with this one.
     // If matrices are of different size (or not positioned evenly) the size
@@ -183,21 +183,43 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
         val combineTileHeight = min(thisTileHeight, otherTileHeight)
         val combineTileWidth = min(thisTileWidth, otherTileWidth)
 
-        for(y in start.y until start.y+combineTileHeight) {
-           for(x in start.x until start.x+combineTileWidth) {
-               replace(x,y) {current -> combiner(current, other.data[y - start.y][x - start.x])}
-           }
+        for (y in start.y until start.y + combineTileHeight) {
+            for (x in start.x until start.x + combineTileWidth) {
+                replace(x, y) { current -> combiner(current, other.data[y - start.y][x - start.x]) }
+            }
         }
     }
 
-   // Mutable
+    // Mutable
     fun rows() = this.data
 
-    fun values() =this.data.map { it.map { it.value } }
+    fun values() = this.data.map { it.map { it.value } }
 
     fun <V> map(mapper: (Entry<T>) -> V): Matrix<V> {
         val newData = data.map { row -> row.map { cell -> mapper(cell) } }
-       return Matrix(newData)
+        return Matrix(newData)
+    }
+
+    /**
+     * Start from given cursor (excluded) and trace the route determined by the router function.
+     * Router function is passed the updated cursor after each step. Stops when cursor goes
+     * out of bounds or null is returned from router
+     */
+    fun trace(startFrom: Cursor, router: (Cursor) -> Cursor?): List<Entry<T>> {
+        if(!isInBounds(startFrom))
+            throw Error("Start is out of bounds $startFrom")
+
+        val route = mutableListOf<Entry<T>>()
+        var next = router(startFrom)
+        while (next != null && isInBounds(next) ) {
+            route.add(get(next.x, next.y))
+            next = router(next)
+        }
+        return route
+    }
+
+    private fun isInBounds(next: Cursor): Boolean {
+        return next.x < width() && next.y < height()
     }
 
     companion object {
@@ -205,7 +227,7 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
             return (0 until height)
                 .map { y ->
                     (0 until width).map { x ->
-                        init(x.toInt(),y.toInt())
+                        init(x.toInt(), y.toInt())
                     }
                 }
         }
