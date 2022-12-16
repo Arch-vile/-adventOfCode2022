@@ -62,6 +62,9 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     fun replace(current: Entry<T>, value: T) {
         data[current.cursor.y][current.cursor.x] = current.copy(value = value)
     }
+    fun replace(point: Cursor, newValue: (Entry<T>) -> T) {
+       replace(point.x, point.y,newValue)
+    }
 
     fun replace(x: Int, y: Int, newValue: (Entry<T>) -> T) {
         data[y][x] = data[y][x].copy(value = newValue(data[y][x]))
