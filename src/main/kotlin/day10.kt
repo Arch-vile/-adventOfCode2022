@@ -1,14 +1,20 @@
 package day10
 
+import aoc.utils.closedRange
 import aoc.utils.firstPart
 import aoc.utils.readInput
 import aoc.utils.secondAsInt
 
-fun part1(): Int {
+fun part2(): String {
 
     var cycle = 1
     var register = 1
     var executing = mutableListOf<String>()
+    var crtRow = mutableListOf<String>()
+
+    var crtResult = mutableListOf<String>()
+
+
     val result = listOf(Pair(0,register)).plus(readInput("day10-input.txt")
         .flatMap {
 
@@ -24,6 +30,17 @@ fun part1(): Int {
             val registerValues = executing.map {
                 val currentCycle = cycle
                 val currentRegister = register
+
+                if( closedRange(currentRegister-1,currentRegister+1).contains((currentCycle-1)%40) ) {
+                   crtRow += "#"
+                } else {
+                    crtRow += "."
+                }
+                if(crtRow.size == 40){
+                    crtResult += crtRow.joinToString("")
+                    crtRow.clear()
+                }
+
                 if (it.firstPart() == "addx") {
                     register += it.secondAsInt()
                 }
@@ -35,12 +52,13 @@ fun part1(): Int {
             registerValues
         })
 
-    return listOf(result[20],result[60],result[100],result[140],result[180],result[220])
-        .sumOf { strength(it) }
+
+    return crtResult.joinToString("/")
+
 
 }
 
-fun part2(): Int {
+fun part1(): Int {
     return 1;
 }
 
