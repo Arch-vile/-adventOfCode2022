@@ -5,6 +5,7 @@ package aoc.utils
  * Split to sublists after given delimeter. Delimeter is not included in sublists.
  */
 fun <T> Collection<T>.splitOn(separator: T): List<List<T>> {
+    TODO("let's name this cut* because it removes also move to list extensions")
    return this.splitAfter(separator)
         .map { it -> if(it.last() == separator) it.dropLast(1) else it }
 }
@@ -19,6 +20,7 @@ fun <T> List<T>.splitMiddle(): Pair<List<T>,List<T>> {
  * Split to sublists after given delimeter. Delimeter is included in the preceding sublist.
  */
 fun <T> Collection<T>.splitAfter(separator: T): List<List<T>> {
+    TODO("also add splitBefore")
     val result = mutableListOf<MutableList<T>>()
 
     var newSublist = true

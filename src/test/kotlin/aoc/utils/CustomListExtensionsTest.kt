@@ -94,4 +94,40 @@ class CustomListExtensionsTest {
 
         )
     }
+
+    @Test
+    fun splitBeforeFirst() {
+
+
+        assertEquals(
+            Pair(listOf(1,2,3), listOf(4,5)),
+            listOf(1,2,3,4,5).splitBeforeFirst{ it > 3}
+        )
+
+        TODO("add more test cases")
+
+    }
+
+    @Test
+    fun takeUntil() {
+        assertEquals(
+            listOf<Int>(),
+            listOf<Int>().takeUntil { it < 5},
+        )
+        assertEquals(
+            listOf(4,2,4),
+            listOf(4,2,4).takeUntil { it < 5},
+        )
+
+        assertEquals(
+            listOf(4,2,5),
+            listOf(4,2,5).takeUntil { it < 5},
+        )
+
+        assertEquals(
+            listOf(4,2,5),
+            listOf(4,2,5,5,5,5,5,5).takeUntil { it < 5},
+        )
+
+    }
 }

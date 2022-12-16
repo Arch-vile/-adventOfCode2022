@@ -305,4 +305,13 @@ internal class MatrixTest {
         )
     }
 
+    @Test
+    fun getStraightLines() {
+        TODO("ability to get elements starting from given element and going to a direction , UP DOWN CROSS")
+    }
+
+    @Test
+    fun getSurrounding() {
+        TODO("get tile around the given point with radius, optionally filling if out of bounds")
+    }
 }

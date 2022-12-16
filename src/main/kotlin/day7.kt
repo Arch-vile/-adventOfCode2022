@@ -73,6 +73,5 @@ fun listSizes(dir: Directory): List<DirSize> {
     val thisSize = DirSize(dir.name, dir.size())
     val others = dir.dirs.map { listSizes(it) }.flatten()
     return others.plus(thisSize)
-
 }
 

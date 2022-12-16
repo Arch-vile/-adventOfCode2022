@@ -1,5 +1,20 @@
 package aoc.utils
 
+/**
+ * Identical to takeWhile but also includes the first element that did not match.
+ * listOf(1,2,3,4).takeUntil { it < 2 } --> [1,2,3]
+ */
+fun <T> List<T>.takeUntil(predicate: (T) -> Boolean ): List<T> {
+   TODO()
+}
+
+/**
+ * Split just before the first element matching the predicate. The matching element is included
+ * in the latter Pair element
+ */
+fun <T> List<T>.splitBeforeFirst(predicate: (T) -> Boolean ): Pair<List<T>,List<T>> {
+   TODO()
+}
 
 fun <T> intersect(data: Collection<Collection<T>>): Collection<T> {
     return data.reduce { acc, list -> acc.intersect(list).toList() }
