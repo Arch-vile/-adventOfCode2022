@@ -2,9 +2,9 @@ package aoc.aoc.utils
 
 import aoc.utils.findFirstInt
 import aoc.utils.findSecondInt
+import aoc.utils.findSections
 import aoc.utils.secondAsInt
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
 internal class CustomStringExtensionsTest {
@@ -27,6 +27,20 @@ internal class CustomStringExtensionsTest {
         assertEquals(
             456,
             "abc 123 afe 456 j".findSecondInt()
+        )
+    }
+
+    @Test
+    fun findSection() {
+        assertEquals(
+            listOf(
+                listOf(3,3),
+                listOf(3,3,4),
+                listOf(3,4),
+                listOf(3,4,5)
+            ),
+            listOf(1,2,3,3,4,5,6,7).findSections(2..3) { it -> it.first() == 3}
+
         )
     }
 

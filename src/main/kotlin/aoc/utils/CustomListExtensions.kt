@@ -51,3 +51,8 @@ fun <T> permutations(set: Set<T>): Set<List<T>> {
     return allPermutations(set.toList())
 }
 
+
+fun <T> List<T>.findSections(sectionSize: ClosedRange<Int>, matcher: (List<T>) -> Boolean): List<List<T>> {
+  return listOf()
+}
+
