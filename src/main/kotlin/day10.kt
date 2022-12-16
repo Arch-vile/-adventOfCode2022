@@ -1,9 +1,39 @@
 package day10
 
-import aoc.utils.closedRange
-import aoc.utils.firstPart
-import aoc.utils.readInput
-import aoc.utils.secondAsInt
+import aoc.utils.*
+
+fun part1(): Int {
+
+    var registerX = MutableInt(1)
+
+    // Try with reduce also
+    val registerValues =
+        readInput("day10-input.txt")
+            .flatMap {
+                if (it.firstPart() == "noop") {
+                    listOf(registerX.value)
+                } else {
+                    listOf(
+                        registerX.value,
+                        registerX.plus(it.secondAsInt())
+                    )
+                }
+            }
+
+    val valueByCycle =
+        listOf( Pair(1,1)) +
+        registerValues.mapIndexed { index, value -> Pair(index + 2, value) }
+
+    return listOf(
+        valueByCycle[20 - 1],
+        valueByCycle[60 - 1],
+        valueByCycle[100 - 1],
+        valueByCycle[140 - 1],
+        valueByCycle[180 - 1],
+        valueByCycle[220 - 1]
+    ).sumOf { value -> value.first * value.second }
+}
+
 
 fun part2(): String {
 
@@ -15,7 +45,7 @@ fun part2(): String {
     var crtResult = mutableListOf<String>()
 
 
-    val result = listOf(Pair(0,register)).plus(readInput("day10-input.txt")
+    val result = listOf(Pair(0, register)).plus(readInput("day10-input.txt")
         .flatMap {
 
             if (it.firstPart() == "noop") {
@@ -31,12 +61,12 @@ fun part2(): String {
                 val currentCycle = cycle
                 val currentRegister = register
 
-                if( closedRange(currentRegister-1,currentRegister+1).contains((currentCycle-1)%40) ) {
-                   crtRow += "#"
+                if (closedRange(currentRegister - 1, currentRegister + 1).contains((currentCycle - 1) % 40)) {
+                    crtRow += "#"
                 } else {
                     crtRow += "."
                 }
-                if(crtRow.size == 40){
+                if (crtRow.size == 40) {
                     crtResult += crtRow.joinToString("")
                     crtRow.clear()
                 }
@@ -58,10 +88,7 @@ fun part2(): String {
 
 }
 
-fun part1(): Int {
-    return 1;
-}
 
-fun strength(state: Pair<Int,Int>): Int {
+fun strength(state: Pair<Int, Int>): Int {
     return state.first * state.second
 }
