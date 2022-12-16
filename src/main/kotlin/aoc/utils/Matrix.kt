@@ -21,6 +21,8 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
         }
     }
 
+    constructor(width: Long, height: Long, init: (Int, Int) -> T) : this(initialize(width, height, init))
+
     private fun valueOrFilled(input: List<List<T>>, y: Int, x: Int, filler: ((x: Int, y: Int) -> T)?): T {
 
         if (input[y].size <= x) {
@@ -37,7 +39,6 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     private fun maxColumnCount(input: List<List<T>>) = input.maxOf { it.size }
 
 
-    constructor(width: Long, height: Long, init: (Int, Int) -> T) : this(initialize(width, height, init))
 
     fun get(x: Int, y: Int) = data[y][x]
 
@@ -75,14 +76,20 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     /**
      * Return tile (part) of this Matrix between the given points. Start point must be with
      * smaller (or equal) x and y than end point.
+     *
+     * Fails if out of bounds unless a fill value is given.
      */
-    fun tile(start: Point, end: Point): Matrix<T> {
+    fun tile(start: Cursor, end: Cursor, fill: T? =null): Matrix<T> {
         return Matrix((start.y..end.y).map { y ->
             (start.x..end.x).map { x ->
-                data[y.toInt()][x.toInt()].value
+                if(fill == null || isInBounds(Cursor(x,y)))
+                    data[y][x].value
+                else
+                    fill
             }
         })
     }
+
 
     /**
      * Splits this matrix to multiple sub-matrixes determined by a moving window
@@ -129,8 +136,8 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
         return Matrix(foo)
     }
 
-    override fun toString(): String {
-        return data.joinToString("\n") { row -> row.map { it.value }.toString() };
+    fun visualize(columnSeparator: String = ","): String {
+        return data.joinToString("\n") { row -> row.map { it.value }.joinToString(columnSeparator) };
     }
 
     fun height() = data.size
@@ -222,6 +229,7 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
         return next.x >= 0 && next.x < width() && next.y >= 0 && next.y < height()
     }
 
+
     companion object {
         private fun <T> initialize(width: Long, height: Long, init: (x: Int, y: Int) -> T): List<List<T>> {
             return (0 until height)
@@ -230,6 +238,10 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
                         init(x.toInt(), y.toInt())
                     }
                 }
+        }
+
+        fun fromString(content: List<String>): Matrix<String> {
+            return Matrix(content.map{ it.toList()})
         }
     }
 
