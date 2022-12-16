@@ -55,6 +55,12 @@ class Solutions {
     }
 
     @Test
+    fun day8() {
+        assertEquals(1, day8.part1())
+        assertEquals(1, day8.part2())
+    }
+
+    @Test
     fun day_WIP() {
         assertEquals(1, dayWIP.part1())
         assertEquals(1, dayWIP.part2())
