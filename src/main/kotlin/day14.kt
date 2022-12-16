@@ -9,7 +9,7 @@ fun main() {
 
 fun part1(): Int {
     val sandSource = Cursor(500, 0)
-    val rockLinEnds = readInput("test.txt")
+    val rockLinEnds = readInput("day14-input.txt")
         .map { it.findInts().windowed(2, 2).map { Cursor(it[0], it[1]) } }
 
     val smallestX = rockLinEnds.map { it.minOf { min(it.x, sandSource.x) } }.minOrNull()!!
@@ -30,10 +30,37 @@ fun part1(): Int {
         drawRockLine(cave, it)
     }
 
+    for (i in 1..10000) {
+
+        var sand: Cursor? = sandSource.minus(offset)
+        while(sand != null) {
+            val down = Cursor(0, 1)
+            val downLeft = Cursor(-1, 1)
+            val downRight = Cursor(1, 1)
+
+            if (cave.getRelative(sand, down) == null || cave.getRelative(sand, down)?.value == '.') {
+                sand = sand.move(down)
+            } else if (cave.getRelative(sand, downLeft) == null || cave.getRelative(sand, downLeft)?.value == '.') {
+                sand = sand.move(downLeft)
+            } else if (cave.getRelative(sand, downRight) == null || cave.getRelative(sand, downRight)?.value == '.') {
+                sand = sand.move(downRight)
+            } else if(cave.isInBounds(sand)){
+                cave.replace(sand) { 'o' }
+                sand = null
+            }
+
+            if(sand != null && !cave.isInBounds(sand)) {
+                throw Error("Out of bounds on round ${i-1}")
+            }
+        }
+
+
+    }
+
     println(cave.visualize(""))
 
-
-
+    // 874 your answer is too high.
+    // 873 correct...
     return 1;
 }
 
@@ -46,7 +73,7 @@ fun drawRockLine(cave: Matrix<Char>, line: Pair<Cursor, Cursor>) {
         .map { Cursor(it.x.toInt(), it.y.toInt()) }
 
     points.forEach {
-        cave.replace(it){ '#'}
+        cave.replace(it) { '#' }
     }
 }
 

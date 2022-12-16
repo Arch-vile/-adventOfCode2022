@@ -185,6 +185,14 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
             .map { get(it) }
     }
 
+    fun getRelative(cursor: Cursor, relative: Cursor): Entry<T>? {
+        val location = cursor.move(relative)
+        if(isInBounds(location))
+            return get(location)
+        else
+            return null
+    }
+
     /**
      * Cells up,down,left and right
       */
@@ -252,7 +260,7 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
         return route
     }
 
-    private fun isInBounds(next: Cursor): Boolean {
+    fun isInBounds(next: Cursor): Boolean {
         return next.x >= 0 && next.x < width() && next.y >= 0 && next.y < height()
     }
 
