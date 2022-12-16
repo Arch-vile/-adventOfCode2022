@@ -22,6 +22,24 @@ data class Directory(
 
 
 fun part1(): Int {
+    val root = buildFileSystem()
+    val sizes = listSizes(root)
+    return sizes.filter { it.size <= 100000 }.sumOf { it.size }
+}
+
+fun part2(): Int {
+    val root = buildFileSystem()
+    val sizes = listSizes(root)
+
+    val sizeAvailable = 70000000 - root.size()
+    val sizeNeeded = 30000000 - sizeAvailable
+
+    return sizes.filter { it.size >= sizeNeeded }
+        .sortedBy { it.size }
+        .first().size
+}
+
+fun buildFileSystem(): Directory {
     val input = readInput("day7-input.txt").drop(1)
 
     var currentDir = Directory("/", null, mutableListOf())
@@ -45,43 +63,15 @@ fun part1(): Int {
                 currentDir = currentDir.cd(dirName)
         }
     }
-
-    val sizes = listSizes(root)
-
-    val sizeAvailable = 70000000 - root.size()
-    val sizeNeeded = 30000000 - sizeAvailable
-
-    println("used§ ${root.size()}")
-
-    println("available $sizeAvailable")
-    println("needed $sizeNeeded")
-    sizes.filter {
-        val size = secondPart(it).toInt()
-        size >= sizeNeeded
-    }
-        .sortedBy { secondPart(it).toInt() }
-        .forEach { println(it) }
-
-    // 3252529 not right
-    // 7229496 too high
-
-//    return secondPart(target).toInt()
-    return 1
-
+    return root
 }
 
-fun part2(): Int {
 
+data class DirSize(val name: String, val size: Int)
 
-    return 1;
-}
-
-fun listSizes(dir: Directory): List<String> {
-
-    val thisSize = "${dir.name} ${dir.size()}"
-
+fun listSizes(dir: Directory): List<DirSize> {
+    val thisSize = DirSize(dir.name, dir.size())
     val others = dir.dirs.map { listSizes(it) }.flatten()
-
     return others.plus(thisSize)
 
 }
@@ -91,11 +81,6 @@ fun secondPart(it: String): String {
 }
 
 fun firstPart(it: String): String {
-    return it.split(" ")[0]
-}
-
-
-fun command(it: String): String {
     return it.split(" ")[0]
 }
 
