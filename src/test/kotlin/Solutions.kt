@@ -12,7 +12,8 @@ class Solutions {
 
     @Test
     fun day1(){
-        // assertEquals( 1580000,day2.solve());
-        // assertEquals( 1251263225, day2.solve_part2())
+        assertEquals(69501, day1.part1())
     }
+
+
 }
