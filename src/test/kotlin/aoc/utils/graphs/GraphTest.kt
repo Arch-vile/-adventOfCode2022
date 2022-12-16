@@ -130,35 +130,43 @@ internal class GraphTest {
         c.link(5,b)
         c.link(6,d)
 
-       assertEquals(9, shortestPath(a, d))
+       assertEquals(9, shortestDistance(a, d))
+        assertEquals(listOf(a,c,d), aoc.utils.graphs.shortestPath(a,d))
     }
 
 
     @Test
     fun shortestPath_complex() {
-        var first = Node(1)
-        var second =  Node(2)
-        var third = Node(3)
-        var fourth = Node(4)
-        var fifth = Node(5)
-        var sixth = Node(6)
-        var seventh = Node(7)
-        var eight = Node(8)
-        var ninth = Node(9)
+        var a = Node('a')
+        var b =  Node('b')
+        var c = Node('c')
+        var d = Node('d')
+        var e = Node('e')
+        var f = Node('f')
+        var g = Node('g')
+        var h = Node('h')
+        var i = Node('i')
 
         // Keep the leaf as the first one and with shortest distance
-        fifth.link(1,ninth)
-        first.link(2,second)
-        first.link(5, third)
-        second.link(3, fourth)
-        second.link(4, fifth)
-        second.link(2, sixth)
-        third.link(2, eight)
-        fourth.link(5,eight)
-        fifth.link(8,eight)
-        sixth.link(3,seventh)
-        seventh.link(4,eight)
+        e.link(1,i)
+        a.link(2,b)
+        a.link(5, c)
+        b.link(3, d)
+        b.link(4, e)
+        b.link(2, f)
+        c.link(2, h)
+        d.link(5,h)
+        e.link(8,h)
+        f.link(3,g)
+        g.link(4,h)
 
-        assertEquals(7, shortestPath(first, eight))
+        assertEquals(7, shortestDistance(a, h))
+        assertEquals(listOf(a,c,h), shortestPath(a,h))
+
+        assertEquals(7, shortestDistance(a, i))
+        assertEquals(listOf(a,b,e,i), shortestPath(a,i))
+
+        assertEquals(8, shortestDistance(b, h))
+        assertEquals(listOf(b,d,h), shortestPath(b,h))
     }
 }

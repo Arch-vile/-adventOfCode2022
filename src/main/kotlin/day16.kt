@@ -3,10 +3,9 @@ package day16
 import aoc.utils.findInts
 import aoc.utils.graphs.Node
 import aoc.utils.graphs.allNodes
-import aoc.utils.graphs.shortestPath
+import aoc.utils.graphs.shortestDistance
 import aoc.utils.readInput
 import aoc.utils.splitOn
-import aoc.utils.takeUntil
 
 data class Valve(val name: String, val flow: Int)
 
@@ -34,7 +33,7 @@ fun main() {
 
     val start = valves.firstOrNull { it.value.name == "AA" }!!
 
-    val routes: List<List<Node<Valve>>> = allRoutes(allNodes(start).size, setOf(start.value.name), start, listOf(start))
+    val routes: List<List<Node<Valve>>> = allRoutes(allNodes(start).size, setOf(start.value.name), listOf(start))
 
 
     println("done")
@@ -66,7 +65,7 @@ fun allRoutes(
         unvisited != null
     }
     // FIXME: It could be that the one we should start from is not the first one with unvisited neighbours?
-    val path = shortestPath(current,reverseBackTo)
+    val path = shortestDistance(current,reverseBackTo)
     TODO("we need the actual node path, not only the cost")
 }
 

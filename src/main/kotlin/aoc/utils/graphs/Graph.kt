@@ -45,7 +45,27 @@ data class Edge<T>(var distance: Long, var target: Node<T>) {
 }
 
 
-fun <T> shortestPath(start: Node<T>, target: Node<T>): Long? {
+fun <T> shortestPath(start: Node<T>, target: Node<T>): List<Node<T>> {
+    val distances = shortestDistances(start, target)
+    val allNodes = allNodes(start)
+    val path = mutableListOf(target)
+    var current = target
+    while (current != start) {
+        current =
+                // Nodes that connect to current
+            allNodes.filter { it.edges.firstOrNull { it.target == current } != null }
+                // Out of those the closest to start is where we go
+                .minByOrNull {
+                    // Not all nodes are visited during shortest path search (e.g. nodes only accessible from target)
+                    distances[it] ?: Long.MIN_VALUE
+                }!!
+        path.add(current)
+    }
+
+    return path.reversed()
+}
+
+fun <T> shortestDistance(start: Node<T>, target: Node<T>): Long? {
     val distances = shortestDistances(start, target)
     return distances[target]
 }
@@ -54,17 +74,16 @@ fun <T> shortestPath(start: Node<T>, target: Node<T>): Long? {
  * Shortest distances from start to all other nodes. If target is given, will
  * stop when shortest distance to target is found.
  */
-fun <T> shortestDistances(start: Node<T>, target: Node<T>?): Map<Node<T>,Long> {
+fun <T> shortestDistances(start: Node<T>, target: Node<T>?): Map<Node<T>, Long> {
 
     val unvisitedNodes = SortedLookup<Node<T>, Long>()
     // Shortest distance to all nodes from start
-    val completedNodes = mutableMapOf<Node<T>,Long>()
+    val completedNodes = mutableMapOf<Node<T>, Long>()
 
     val allNodes = allNodes(start)
-    allNodes(start)
-        .forEach {
-            unvisitedNodes.add(it, Long.MAX_VALUE)
-        }
+    allNodes(start).forEach {
+        unvisitedNodes.add(it, Long.MAX_VALUE)
+    }
     unvisitedNodes.add(start, 0)
 
     var current = start
@@ -72,23 +91,19 @@ fun <T> shortestDistances(start: Node<T>, target: Node<T>?): Map<Node<T>,Long> {
         val edges = current.edges.filter { unvisitedNodes.containsKey(it.target) }
         edges.forEach { edge ->
             val newDistance = unvisitedNodes.get(current)!! + edge.distance
-            if (newDistance < unvisitedNodes.get(edge.target)!!)
-                unvisitedNodes.add(edge.target, newDistance)
+            if (newDistance < unvisitedNodes.get(edge.target)!!) unvisitedNodes.add(edge.target, newDistance)
         }
         val removed = unvisitedNodes.drop(current)
         completedNodes[removed.first] = removed.second
 
-        if(unvisitedNodes.size() == 0) {
+        if (unvisitedNodes.size() == 0) {
             return completedNodes
         }
 
         if (removed.first === target) {
             return completedNodes
-        }
-        else {
-            current = unvisitedNodes.sortedByValue()
-                .filter { unvisitedNodes.containsKey(it.first) }
-                .first().first
+        } else {
+            current = unvisitedNodes.sortedByValue().filter { unvisitedNodes.containsKey(it.first) }.first().first
         }
     }
 }
@@ -98,10 +113,9 @@ fun <T> shortestPath2(start: Node<T>, target: Node<T>): Long? {
 
     val unvisitedNodes = SortedLookup<Node<T>, Long>()
 
-    allNodes(start)
-        .forEach {
-            unvisitedNodes.add(it, Long.MAX_VALUE)
-        }
+    allNodes(start).forEach {
+        unvisitedNodes.add(it, Long.MAX_VALUE)
+    }
     unvisitedNodes.add(start, 0)
 
     var current = start
@@ -109,34 +123,26 @@ fun <T> shortestPath2(start: Node<T>, target: Node<T>): Long? {
         val edges = current.edges.filter { unvisitedNodes.containsKey(it.target) }
         edges.forEach { edge ->
             val newDistance = unvisitedNodes.get(current)!! + edge.distance
-            if (newDistance < unvisitedNodes.get(edge.target)!!)
-                unvisitedNodes.add(edge.target, newDistance)
+            if (newDistance < unvisitedNodes.get(edge.target)!!) unvisitedNodes.add(edge.target, newDistance)
         }
         val removed = unvisitedNodes.drop(current)
 
         if (removed.first === target) {
             return removed.second
-        }
-        else {
-            current = unvisitedNodes.sortedByValue()
-                .filter { unvisitedNodes.containsKey(it.first) }
-                .first().first
+        } else {
+            current = unvisitedNodes.sortedByValue().filter { unvisitedNodes.containsKey(it.first) }.first().first
         }
     }
 }
 
 fun <T> route(
-    start: Node<T>,
-    target: Node<T>,
-    tentativeDistances: MutableMap<Node<T>, Long>
+    start: Node<T>, target: Node<T>, tentativeDistances: MutableMap<Node<T>, Long>
 ): List<Node<T>> {
     return backtrack(target, start, tentativeDistances)
 }
 
 fun <T> backtrack(
-    current: Node<T>,
-    target: Node<T>,
-    tentativeDistances: MutableMap<Node<T>, Long>
+    current: Node<T>, target: Node<T>, tentativeDistances: MutableMap<Node<T>, Long>
 ): List<Node<T>> {
     if (current == target) {
         return listOf()
@@ -154,9 +160,7 @@ fun <T> allNodes(start: Node<T>): Set<Node<T>> {
     while (unvisited.isNotEmpty()) {
         val current = unvisited.first()
         unvisited.remove(current)
-        current.edges
-            .filter { !visited.contains(it.target) }
-            .forEach { unvisited.add(it.target) }
+        current.edges.filter { !visited.contains(it.target) }.forEach { unvisited.add(it.target) }
         visited.add(current)
     }
 

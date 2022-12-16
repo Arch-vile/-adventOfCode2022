@@ -2,7 +2,7 @@ package day12
 
 import aoc.utils.*
 import aoc.utils.graphs.Node
-import aoc.utils.graphs.shortestPath
+import aoc.utils.graphs.shortestDistance
 import java.lang.Exception
 
 data class Square(var height: Char, var isVisited: Boolean)
@@ -32,7 +32,7 @@ fun part1(): Long {
 
     val startNode = graphMatrix.get(start.cursor).value
     val endNode = graphMatrix.get(end.cursor).value
-    return shortestPath(startNode, endNode)!!
+    return shortestDistance(startNode, endNode)!!
 }
 
 fun part2(): Long {
@@ -48,7 +48,7 @@ fun part2(): Long {
     val anyShortest = map.findAll { it.value.value.height == 'a' }
         .map {
             try {
-                val foo = shortestPath(it.value, end.value)!!
+                val foo = shortestDistance(it.value, end.value)!!
                 foo
             } catch (e: Exception) {
                 // TODO shortest path should not error
