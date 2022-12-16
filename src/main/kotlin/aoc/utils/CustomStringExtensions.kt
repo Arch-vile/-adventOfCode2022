@@ -50,3 +50,7 @@ fun String.takeUntilMatch(predicate: (String) -> Boolean): Pair<String,String> {
     else
     return Pair("",this)
 }
+
+fun String.isInt(): Boolean {
+   return """\d+""".toRegex().matches(this)
+}
