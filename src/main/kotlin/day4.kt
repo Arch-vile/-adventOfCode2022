@@ -1,5 +1,8 @@
 package day4
 
+import utils.closedRange
+import utils.containsFully
+import utils.hasOverlap
 import utils.readInput
 
 fun part1(): Int {
@@ -11,30 +14,17 @@ return    readInput("day4-input.txt")
                 toRange(it[1])
             )
         }
-        .filter { overlap(it.first, it.second)  }
+        .filter { containsFullyEither(it.first, it.second)  }
         .count()
 }
 
-fun overlap2(first: Pair<Int, Int>, second: Pair<Int, Int>): Boolean {
-    if(first.first >= second.first && first.first <= second.second)
-        return true
-
-    return false
-
-}
-fun overlap(first: Pair<Int, Int>, second: Pair<Int, Int>): Boolean {
-    if (first.first >= second.first && first.second <= second.second)
-        return true
-
-    if (second.first >= first.first && second.second <= first.second)
-        return true;
-
-    return false
+fun containsFullyEither(first: ClosedRange<Int>, second: ClosedRange<Int>): Boolean {
+   return first.containsFully(second) || second.containsFully(first)
 }
 
-fun toRange(s: String): Pair<Int, Int> {
+fun toRange(s: String): ClosedRange<Int> {
     val parts = s.split("-")
-    return Pair(parts[0].toInt(), parts[1].toInt())
+    return closedRange(parts[0].toInt(), parts[1].toInt())
 }
 
 fun part2(): Int {
@@ -46,6 +36,6 @@ fun part2(): Int {
                 toRange(it[1])
             )
         }
-        .filter { overlap2(it.first, it.second) || overlap2(it.second, it.first) }
+        .filter { it.first.hasOverlap(it.second) }
         .count()
 }
