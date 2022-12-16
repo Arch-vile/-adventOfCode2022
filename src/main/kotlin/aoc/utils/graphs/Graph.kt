@@ -47,18 +47,19 @@ data class Edge<T>(var distance: Long, var target: Node<T>) {
 
 fun <T> shortestPath(start: Node<T>, target: Node<T>): List<Node<T>> {
     val distances = shortestDistances(start, target)
-    val allNodes = allNodes(start)
+
+    // Only consider nodes that were visited while searching for shortest distances
+    val allNodes = allNodes(start).filter { distances.containsKey(it) }
     val path = mutableListOf(target)
     var current = target
     while (current != start) {
-        current =
-                // Nodes that connect to current
-            allNodes.filter { it.edges.firstOrNull { it.target == current } != null }
-                // Out of those the closest to start is where we go
-                .minByOrNull {
-                    // Not all nodes are visited during shortest path search (e.g. nodes only accessible from target)
-                    distances[it] ?: Long.MIN_VALUE
-                }!!
+        // Nodes that connect to current
+        val connected = allNodes.filter { it.edges.firstOrNull { it.target == current } != null }
+
+        // Out of those the closest to start is where we go
+        val closestToStart = connected.minByOrNull { distances[it]!! }!!
+
+        current = closestToStart
         path.add(current)
     }
 

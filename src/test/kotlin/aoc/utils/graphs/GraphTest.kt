@@ -134,6 +134,23 @@ internal class GraphTest {
         assertEquals(listOf(a,c,d), aoc.utils.graphs.shortestPath(a,d))
     }
 
+    @Test
+    fun shortestPath_Regression() {
+        var a = Node('a')
+        var b = Node('b')
+        var c = Node('c')
+        var d = Node('d')
+        var e = Node('e')
+
+        a.link(1,b)
+        a.biLink(1,d)
+        c.biLink(1,b)
+        c.biLink(1,d)
+        d.biLink(1,e)
+
+        assertEquals(listOf(b,c,d), shortestPath(b,d))
+    }
+
 
     @Test
     fun shortestPath_complex() {
