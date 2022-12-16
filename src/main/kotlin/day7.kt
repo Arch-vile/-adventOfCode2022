@@ -1,6 +1,6 @@
 package day7
 
-import aoc.utils.readInput
+import aoc.utils.*
 
 data class File(val name: String, val size: Int)
 data class Directory(
@@ -47,16 +47,16 @@ fun buildFileSystem(): Directory {
 
     input.forEach {
 
-        if (firstPart(it) == "dir") {
-            currentDir.dirs.add(Directory(secondPart(it), currentDir))
+        if (it.firstPart() == "dir") {
+            currentDir.dirs.add(Directory(it.secondPart(), currentDir))
         }
 
-        if (firstPart(it).matches("\\d*".toRegex())) {
-            currentDir.files.add(File(secondPart(it), firstPart(it).toInt()))
+        if (it.firstPart().matches("\\d*".toRegex())) {
+            currentDir.files.add(File(it.secondPart(), it.firstAsInt()))
         }
 
         if (it.startsWith("$ cd")) {
-            val dirName = it.split(" ")[2]
+            val dirName = it.thirdPart()
             if (dirName == "..")
                 currentDir = currentDir.parent!!
             else
@@ -74,13 +74,5 @@ fun listSizes(dir: Directory): List<DirSize> {
     val others = dir.dirs.map { listSizes(it) }.flatten()
     return others.plus(thisSize)
 
-}
-
-fun secondPart(it: String): String {
-    return it.split(" ")[1]
-}
-
-fun firstPart(it: String): String {
-    return it.split(" ")[0]
 }
 
