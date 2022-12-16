@@ -43,5 +43,24 @@ internal class CustomStringExtensionsTest {
         )
     }
 
+    @Test
+    fun takeUntilMatch() {
+
+        assertEquals(
+            Pair("ab", "cde"),
+            "abcde".takeUntilMatch { it == "ab" })
+
+        assertEquals(
+            Pair("abcde", ""),
+            "abcde".takeUntilMatch { it == "abcde" })
+
+        assertEquals(
+            Pair("", "abcde"),
+            "abcde".takeUntilMatch { it == "x" })
+
+        assertEquals(
+            Pair("", ""),
+            "".takeUntilMatch { it == "x" })
+    }
 
 }

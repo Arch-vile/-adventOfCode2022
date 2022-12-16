@@ -1,5 +1,7 @@
 package aoc.utils
 
+import java.util.function.Predicate
+
 fun sort(value: String) = value.toCharArray().sorted().joinToString("")
 
 fun String.toList() = toCharArray().toList().map { it.toString() }
@@ -32,3 +34,19 @@ fun String.findGroups(regex: Regex): List<String> {
         .toList()
 }
 
+/**
+ * Returns the matching part and the rest. Reading from the start of the string.
+ */
+fun String.takeUntilMatch(predicate: (String) -> Boolean): Pair<String,String> {
+    var result = ""
+    for(i in indices) {
+        if(predicate(result)) {
+            return Pair(result, substring(result.length,length))
+        } else {
+            result+=this[i]
+        }
+    }
+    if(predicate(result)) return Pair(result,"")
+    else
+    return Pair("",this)
+}
