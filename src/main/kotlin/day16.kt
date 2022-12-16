@@ -4,6 +4,7 @@ import aoc.utils.findInts
 import aoc.utils.graphs.Node
 import aoc.utils.readInput
 import aoc.utils.splitOn
+import kotlin.math.max
 
 data class Valve(val name: String, val flow: Int)
 
@@ -30,9 +31,45 @@ fun main() {
         }
 
     val start = valves.firstOrNull { it.value.name == "AA" }!!
+
+    println( venture(30, start, start, listOf(), 0))
 }
 
+fun venture(timeLeft: Int, current: Node<Valve>, from: Node<Valve>, valvesOpened: List<Node<Valve>>, pressureReleased: Int): Int {
 
+   val accumPressure = pressureReleased + pressureChange(valvesOpened)
+
+    val timeRemaining = timeLeft-1
+    if (timeRemaining == 0)
+        return accumPressure
+
+    // Never go back to where we just came from (if we opened current == from)
+    val connections = current.edges.map { it.target }.filter { it != from  }
+
+    // Can't move anywhere and current was already opened, we can just stand still?
+    if(connections.isEmpty() && valvesOpened.contains(current)) {
+       return venture(timeRemaining, current, from, valvesOpened, accumPressure)
+    }
+
+    val moveScore =
+        connections.map {
+            venture(timeRemaining, it, current, valvesOpened, accumPressure )
+        }.maxOfOrNull{ it }
+
+    if(!valvesOpened.contains(current)) {
+        return max(moveScore ?: 0,
+           venture(timeRemaining,current,from,valvesOpened.plus(current),accumPressure)
+            )
+    }
+
+    if(moveScore==null)
+        println()
+    return moveScore!!
+}
+
+fun pressureChange(valvesOpened: List<Node<Valve>>): Int {
+    return valvesOpened.sumOf { it.value.flow }
+}
 
 fun part1(): Int {
     readInput("dayWIP-input.txt")
