@@ -11,11 +11,17 @@ return    readInput("input.txt")
                 toRange(it[1])
             )
         }
-        .filter { overlap(it.first, it.second) }
-//        .map { println(it) }
+        .filter { overlap(it.first, it.second)  }
         .count()
 }
 
+fun overlap2(first: Pair<Int, Int>, second: Pair<Int, Int>): Boolean {
+    if(first.first >= second.first && first.first <= second.second)
+        return true
+
+    return false
+
+}
 fun overlap(first: Pair<Int, Int>, second: Pair<Int, Int>): Boolean {
     if (first.first >= second.first && first.second <= second.second)
         return true
@@ -32,5 +38,14 @@ fun toRange(s: String): Pair<Int, Int> {
 }
 
 fun part2(): Int {
-    return 1;
+    return    readInput("input.txt")
+        .map { it.split(",") }
+        .map {
+            Pair(
+                toRange(it[0]),
+                toRange(it[1])
+            )
+        }
+        .filter { overlap2(it.first, it.second) || overlap2(it.second, it.first) }
+        .count()
 }
