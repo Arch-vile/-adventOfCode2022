@@ -8,7 +8,7 @@ fun part1(): Int {
 
     val matrix = Matrix(input)
 
-    return matrix.all()
+    return matrix.allInColumnOrder()
         .filter {
             val lineUp = matrix.trace(it.cursor) { p -> Cursor(p.x, p.y - 1) }
             val lineDown = matrix.trace(it.cursor) { p -> Cursor(p.x, p.y + 1) }
@@ -30,7 +30,7 @@ fun part2(): Int {
 
     val matrix = Matrix(input)
 
-    return matrix.all()
+    return matrix.allInColumnOrder()
         .map {
             val lineUp = matrix.trace(it.cursor) { p -> Cursor(p.x, p.y - 1) }
             val lineDown = matrix.trace(it.cursor) { p -> Cursor(p.x, p.y + 1) }

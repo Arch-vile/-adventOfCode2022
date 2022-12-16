@@ -4,7 +4,7 @@ import aoc.utils.SortedLookup
 
 
 // Not immutable by any means
-data class Node<T>(val value: T) {
+data class Node<T>(var value: T) {
 
     val edges: MutableSet<Edge<T>> = mutableSetOf()
 

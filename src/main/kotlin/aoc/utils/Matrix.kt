@@ -10,6 +10,7 @@ data class Cursor(val x: Int, val y: Int) {
     fun moveX(amount: Int) = copy(x = x + amount)
     fun moveY(amount: Int) = copy(y = y + amount)
     fun move(other: Cursor) = copy(x = x + other.x, y = y + other.y)
+    fun minus(other: Cursor) = Cursor(x-other.x, y-other.y)
 }
 
 class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
@@ -133,7 +134,11 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
         return found.toList()
     }
 
-    fun all(): List<Entry<T>> = data.flatten()
+
+    /**
+     * All nodes reading left to right, top to bottom
+     */
+    fun allInColumnOrder(): List<Entry<T>> = data.flatten()
 
     fun rotateCW(): Matrix<T> {
         val foo = IntRange(0, data[0].size - 1)
