@@ -1,6 +1,7 @@
 package aoc.utils
 
 import java.lang.Integer.min
+import java.util.function.Predicate
 
 data class Entry<T>(val cursor: Cursor, val value: T)
 data class Size(val width: Int, val height: Int)
@@ -47,10 +48,10 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     fun get(x: Int, y: Int) = data[y][x]
     fun get(pos: Cursor) = data[pos.y][pos.x]
 
-    fun find(value: T): Entry<T>? {
+    fun find(predicate: Predicate<T>): Entry<T>? {
         for (y in 0 until height()) {
             for (x in 0 until width()) {
-                if (data[y][x].value == value)
+                if (predicate.test(data[y][x].value))
                     return data[y][x]
             }
         }
@@ -174,6 +175,18 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
             }
             .filter { it.y < data.size && it.y >= 0 && it.x < data[0].size && it.x >= 0 }
             .map { get(it) }
+    }
+
+    /**
+     * Cells up,down,left and right
+      */
+    fun getDirectNeighbours(current: Cursor): List<Entry<T>> {
+        return getRelativeAt(current, listOf(
+            Cursor(1,0),
+            Cursor(-1,0),
+            Cursor(0,1),
+            Cursor(0,-1),
+        ))
     }
 
     fun flipHorizontal(): Matrix<T> = Matrix(data.reversed().map { it.map { it.value } })
