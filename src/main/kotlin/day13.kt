@@ -1,16 +1,40 @@
 package day13
 
 import aoc.utils.*
-import java.util.SplittableRandom
 
+fun part2() {
+    val result = readInput("day13-input.txt")
+        .plus("[[2]]")
+        .plus("[[6]]")
+        .filter { it != "" }
+        .map { readList(it) }
+        .sortedWith { a, b -> compareList(a, b) }
+        .reversed()
+        .mapIndexed { index, listing ->
+            index + 1 to listing
+        }
+        .filter {
+            isNestedListWithOneNumber(it.second, 2) ||
+                    isNestedListWithOneNumber(it.second, 6)
+        }
+        .map { it.first }
+        .reduce { acc, pair -> acc * pair }
 
-fun main() {
+    println(result)
+}
 
-    val result  = readInput("day13-input.txt")
-        .windowed(2,3)
+fun isNestedListWithOneNumber(list: Listing, number: Int): Boolean {
+    return list.children?.size == 1 &&
+            list.children!![0].children?.size == 1 &&
+            list.children!![0].children!![0].value == number
+}
+
+fun part1() {
+    val result = readInput("day13-input.txt")
+        .windowed(2, 3)
         .mapIndexed { index, strings ->
             val result = compareList(readList(strings[0]), readList(strings[1]))
-            index+1 to result
+            index + 1 to result
         }
         .filter { it.second == 1 }
         .map { it.first }
@@ -46,12 +70,12 @@ fun compareList(left: Listing, right: Listing): Int {
                 return compare
 
             // Left out of items
-            if(index == left.children.size-1 && right.children.size >= index+1) {
+            if (index == left.children.size - 1 && right.children.size >= index + 1) {
                 return 1
             }
         }
 
-        if(left.children.isEmpty() && !right.children.isEmpty())
+        if (left.children.isEmpty() && !right.children.isEmpty())
             return 1
 
         return 0
@@ -73,8 +97,8 @@ fun readList(from: String): Listing {
     val trimmed = from.replace("""\s+""".toRegex(), "")
 
     // Empty list
-    if(trimmed == "[]") {
-        return Listing(listOf(),null)
+    if (trimmed == "[]") {
+        return Listing(listOf(), null)
     }
 
     // Simple list remains, this is either [1] or [1,2,...]
@@ -117,7 +141,4 @@ fun readList(from: String): Listing {
     return Listing(parts, null)
 }
 
-fun part2(): Int {
-    return 1;
-}
 
