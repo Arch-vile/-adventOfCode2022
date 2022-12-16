@@ -10,11 +10,12 @@ data class Valve(val name: String, val flow: Int)
 
 
 fun main() {
-    val valves = readInput("test.txt")
+    val input = "day16-input.txt"
+    val valves = readInput(input)
         .map { it.split(" ").let { it[1] to it[4].findInts()[0] } }
         .map { Node(Valve(it.first, it.second)) }
 
-    readInput("test.txt")
+    readInput(input)
         .map { it.replace("valve ", "valves ") }
         .map {
             it.split(" ").let {
@@ -25,6 +26,8 @@ fun main() {
         .forEach { connection ->
             val valve = valves.firstOrNull { it.value.name == connection.first }!!
             connection.second.forEach { target ->
+                if(valves.firstOrNull { it.value.name == target } == null)
+                    println()
                 val targetValve = valves.firstOrNull { it.value.name == target }!!
                 valve.biLink(1, targetValve)
             }
@@ -51,20 +54,21 @@ fun venture(timeLeft: Int, current: Node<Valve>, from: Node<Valve>, valvesOpened
        return venture(timeRemaining, current, from, valvesOpened, accumPressure)
     }
 
+    if(connections.isEmpty() && !valvesOpened.contains(current) && current.value.flow != 0)
+        return venture(timeRemaining,current,current,valvesOpened.plus(current),accumPressure)
+
     val moveScore =
         connections.map {
             venture(timeRemaining, it, current, valvesOpened, accumPressure )
-        }.maxOfOrNull{ it }
+        }.maxOf{ it }
 
-    if(!valvesOpened.contains(current)) {
-        return max(moveScore ?: 0,
-           venture(timeRemaining,current,from,valvesOpened.plus(current),accumPressure)
+    if(!valvesOpened.contains(current) && current.value.flow != 0) {
+        return max(moveScore ,
+           venture(timeRemaining,current,current,valvesOpened.plus(current),accumPressure)
             )
     }
 
-    if(moveScore==null)
-        println()
-    return moveScore!!
+    return moveScore
 }
 
 fun pressureChange(valvesOpened: List<Node<Valve>>): Int {
