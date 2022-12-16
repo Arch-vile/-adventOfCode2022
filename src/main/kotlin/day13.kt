@@ -1,32 +1,83 @@
 package day13
 
-import aoc.utils.findFirstInt
-import aoc.utils.indexesOf
-import aoc.utils.takeUntilMatch
-import aoc.utils.toList
+import aoc.utils.*
+import java.util.SplittableRandom
+
 
 fun main() {
 
-//    """\[[^\]]*\]""".toRegex().matches("[1,2,3]").let { println(it) }
-//    """\[[^\]]*\]""".toRegex().matches("[a,[]]").let { println(it) }
+    val result  = readInput("day13-input.txt")
+        .windowed(2,3)
+        .mapIndexed { index, strings ->
+            val result = compareList(readList(strings[0]), readList(strings[1]))
+            index+1 to result
+        }
+        .filter { it.second == 1 }
+        .map { it.first }
+        .sum()
 
-    part1()
+    println(result)
 
-}
-
-fun part1(): Int {
-    val foo = readList("[[1,2],[3]]")
-    return 1;
 }
 
 data class Listing(val children: List<Listing>?, val value: Int?)
 
-fun readList(from: String): Listing {
-    TODO()
+fun compareList(left: Listing, right: Listing): Int {
 
+    // Both are numbers
+    if (left.value != null && right.value != null) {
+        if (left.value < right.value)
+            return 1
+        if (left.value > right.value)
+            return -1
+        return 0
+    }
+
+    // Both are lists
+    if (left.children != null && right.children != null) {
+        left.children.indices.forEach() { index ->
+
+            // Right run out of elements
+            if (index >= right.children.size)
+                return -1
+
+            val compare = compareList(left.children[index], right.children[index])
+            if (compare != 0)
+                return compare
+
+            // Left out of items
+            if(index == left.children.size-1 && right.children.size >= index+1) {
+                return 1
+            }
+        }
+
+        if(left.children.isEmpty() && !right.children.isEmpty())
+            return 1
+
+        return 0
+    }
+
+    // And lastly if one is number other list
+    if (left.value != null) {
+        return compareList(Listing(listOf(Listing(null, left.value)), null), right)
+    }
+
+    if (right.value != null) {
+        return compareList(left, Listing(listOf(Listing(null, right.value)), null))
+    }
+
+    throw Error("should not end here")
+}
+
+fun readList(from: String): Listing {
     val trimmed = from.replace("""\s+""".toRegex(), "")
 
-    // Simple list remains, this is either [],[1] or [1,2,...]
+    // Empty list
+    if(trimmed == "[]") {
+        return Listing(listOf(),null)
+    }
+
+    // Simple list remains, this is either [1] or [1,2,...]
     if ("""\[[^\]]*\]""".toRegex().matches(trimmed)) {
         val numbers = trimmed.substring(1, trimmed.length - 1).split(",").map { it.toInt() }
         val simpleListings = numbers.map { Listing(null, it) }
@@ -39,7 +90,7 @@ fun readList(from: String): Listing {
     var remains = trimmed.substring(1, trimmed.length - 1)
     while (remains != "") {
         // Next up a number
-        if ("""\d+""".toRegex().matches(remains)) {
+        if ("""\d+.*""".toRegex().matches(remains)) {
             val number = remains.findFirstInt().toString()
             remains = remains.removePrefix("$number")
             parts.add(Listing(null, number.toInt()))
@@ -57,10 +108,13 @@ fun readList(from: String): Listing {
             parts.add(readList(listContent.first))
         }
 
-
+        // Just skip the commas
+        if (remains.startsWith(',')) {
+            remains = remains.drop(1)
+        }
     }
 
-
+    return Listing(parts, null)
 }
 
 fun part2(): Int {
