@@ -40,16 +40,23 @@ data class Shape(val blocks: List<Cursor>) {
     }
 }
 
-fun part1(): Int {
+
+fun part1(): Long {
+    return runSimulation(2022)
+}
+
+fun runSimulation(rocks: Long): Long {
     val gasDirection = readInput("day17-input.txt").take(1).flatMap { it.toList() }
     val stationary = mutableListOf(floor)
 
     var nextGasIndex = 0;
     var nextRockIndex = 0
-    repeat(2022) {
+    var rockCount: Long = 0
+    while(rockCount < rocks) {
+        rockCount+=1
         val highestPoint = highestPoint(stationary)
 
-        var current = rocks.getLooping(nextRockIndex).move(Cursor(0, highestPoint.y + 4),stationary)
+        var current = day17.rocks.getLooping(nextRockIndex).move(Cursor(0, highestPoint.y + 4),stationary)
 
         while (true) {
             val direction = gasDirection.getLooping(nextGasIndex)
@@ -63,12 +70,14 @@ fun part1(): Int {
 
         }
         stationary.add(current)
+        if(stationary.size>30)
+            stationary.removeAt(0)
 
         nextRockIndex++
     }
 
     val highestPoint = highestPoint(stationary)
-    return highestPoint.y
+    return highestPoint.y.toLong()
 }
 
 private fun visualize(stationary: MutableList<Shape>, rock: Shape? = null) {
