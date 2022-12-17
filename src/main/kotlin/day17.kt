@@ -40,40 +40,39 @@ data class Shape(val blocks: List<Cursor>) {
     }
 }
 
-fun main() {
-    val gasDirection = readInput("test.txt").take(1).flatMap { it.toList() }
+fun part1(): Int {
+    val gasDirection = readInput("day17-input.txt").take(1).flatMap { it.toList() }
     val stationary = mutableListOf(floor)
 
+    var nextGasIndex = 0;
     var nextRockIndex = 0
-    repeat(1) {
-        var nextGasIndex = 0;
+    repeat(2022) {
         val highestPoint = highestPoint(stationary)
 
         var current = rocks.getLooping(nextRockIndex).move(Cursor(0, highestPoint.y + 4),stationary)
 
         while (true) {
-            visualize(stationary, current)
-
             val direction = gasDirection.getLooping(nextGasIndex)
             current = current.blow(direction, stationary)
+            nextGasIndex+=1
 
             val previous = current
             current = current.move(DOWN,stationary)
             if(previous == current)
                 break
 
-            nextGasIndex+=1
         }
         stationary.add(current)
 
-        visualize(stationary)
         nextRockIndex++
     }
 
+    val highestPoint = highestPoint(stationary)
+    return highestPoint.y
 }
 
 private fun visualize(stationary: MutableList<Shape>, rock: Shape? = null) {
-    val matrix = Matrix(7, 10) { a, b -> "." }
+    val matrix = Matrix(7, 20) { a, b -> "." }
     stationary.flatMap { it.blocks }
         .forEach { matrix.replace(it) { "#" } }
     rock?.let {
@@ -86,11 +85,6 @@ private fun visualize(stationary: MutableList<Shape>, rock: Shape? = null) {
 fun highestPoint(stationary: List<Shape>): Cursor {
     return stationary.flatMap { it.blocks }
         .maxByOrNull { it.y }!!
-}
-
-fun part1(): Int {
-    readInput("dayWIP-input.txt")
-    return 1;
 }
 
 fun part2(): Int {
