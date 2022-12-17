@@ -1,6 +1,7 @@
 package day17
 
 import aoc.utils.*
+import kotlin.math.E
 import kotlin.text.toList
 
 data class Shape(val blocks: List<Cursor>) {
@@ -50,26 +51,53 @@ fun part2(): Long {
 }
 
 fun main() {
-    runSimulation(1000000000000)
+    runSimulation(100000000)
 }
 
-fun runSimulation(rocks: Long): Long {
+fun runSimulation(rocksToDrop: Long): Long {
     val gasDirection = readInput("day17-input.txt").take(1).flatMap { it.toList() }
     val stationary = mutableListOf(floor)
 
     var nextGasIndex = 0;
     var nextRockIndex = 0
     var rockCount: Long = 0
-    val timer = Timer(rocks)
-    while (rockCount < rocks) {
+    val timer = Timer(rocksToDrop)
+
+    var patternToMatch: Set<Cursor>? = null
+
+    while (rockCount < rocksToDrop) {
         rockCount += 1
         timer.processed = rockCount
 
+        if (stationary.size > 20) {
+            if (patternToMatch == null) {
+                patternToMatch = stationary.takeLast(20).flatMap { it.blocks }.toSet()
+                patternToMatch = normalize(patternToMatch)
+            } else {
+                var test = stationary.takeLast(20).flatMap { it.blocks }.toSet()
+                test = normalize(test)
+                if (test.containsAll(patternToMatch) && test.size == patternToMatch.size) {
+                    throw Error("found")
+                }
+            }
+        }
+
         val highestPoint = highestPoint(stationary)
 
-        var current = day17.rocks.getLooping(nextRockIndex).move(Cursor(0, highestPoint.y + 4), stationary)
+        val nextShape = rocks.getLooping(nextRockIndex)
+        var current = nextShape.move(Cursor(0, highestPoint.y + 4), stationary)
 
         while (true) {
+
+//            if(
+//                rockCount >10
+//                && nextShape == hLine
+//                && nextGasIndex % gasDirection.size == 0
+//                ) {
+//                visualize(stationary.takeLast(30))
+//                throw Error()
+//            }
+
             val direction = gasDirection.getLooping(nextGasIndex)
             current = current.blow(direction, stationary)
             nextGasIndex += 1
@@ -81,20 +109,38 @@ fun runSimulation(rocks: Long): Long {
 
         }
         stationary.add(current)
-        if (stationary.size > 30)
+        if (stationary.size > 50)
             stationary.removeAt(0)
 
         nextRockIndex++
     }
 
+    println(visualize(stationary))
+
     val highestPoint = highestPoint(stationary)
     return highestPoint.y.toLong()
 }
 
-private fun visualize(stationary: MutableList<Shape>, rock: Shape? = null) {
-    val matrix = Matrix(7, 20) { a, b -> "." }
-    stationary.flatMap { it.blocks }
-        .forEach { matrix.replace(it) { "#" } }
+fun normalize(cursors: Set<Cursor>): Set<Cursor> {
+    val lowest = cursors.minByOrNull { it.y }!!.y
+    return cursors.map { it.minus(Cursor(0, lowest)) }.toSet()
+}
+
+private fun visualize(stationary: List<Shape>, rock: Shape? = null) {
+    val symbols = ('a'..'z').toList()
+    val lowest = lowestPoint(stationary).y
+
+    val offsettedShapes = stationary.map { it.copy(blocks = it.blocks.map { it.minus(Cursor(0, lowest)) }) }
+
+    val height = highestPoint(offsettedShapes).y
+
+    val matrix = Matrix(7, height + 10L) { a, b -> "." }
+    offsettedShapes.forEach { shape ->
+        val symbol = symbols.random().toString()
+        shape.blocks.forEach {
+            matrix.replace(it) { symbol }
+        }
+    }
     rock?.let {
         it.blocks.forEach { matrix.replace(it) { "@" } }
     }
@@ -107,6 +153,10 @@ fun highestPoint(stationary: List<Shape>): Cursor {
         .maxByOrNull { it.y }!!
 }
 
+fun lowestPoint(stationary: List<Shape>): Cursor {
+    return stationary.flatMap { it.blocks }
+        .minByOrNull { it.y }!!
+}
 
 val hLine = Shape(
     listOf(
