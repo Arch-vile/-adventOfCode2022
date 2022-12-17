@@ -12,7 +12,7 @@ data class Shape(val blocks: List<Cursor>) {
 
     fun move(move: Cursor, stationary: MutableList<Shape>): Shape {
         val updated = this.copy(blocks = blocks.map { it.move(move) })
-        return if(!updated.isFalling(stationary) || updated.isOutOfBounds()) {
+        return if (!updated.isFalling(stationary) || updated.isOutOfBounds()) {
             this
         } else {
             updated
@@ -21,7 +21,7 @@ data class Shape(val blocks: List<Cursor>) {
 
     fun blow(direction: Char, stationary: MutableList<Shape>): Shape {
         // Let's not move if not free
-        if(!isFalling(stationary))
+        if (!isFalling(stationary))
             return this
 
         val move = when (direction) {
@@ -29,20 +29,28 @@ data class Shape(val blocks: List<Cursor>) {
             '<' -> Cursor(-1, 0)
             else -> throw Error("unknown direction")
         }
-        return this.move(move,stationary)
+        return this.move(move, stationary)
     }
 
     private fun isOutOfBounds(): Boolean {
         val maxX = blocks.maxOf { it.x }
         val minX = blocks.minOf { it.x }
 
-       return minX < 0 || maxX > 6
+        return minX < 0 || maxX > 6
     }
 }
 
 
 fun part1(): Long {
     return runSimulation(2022)
+}
+
+fun part2(): Long {
+    return runSimulation(2022)
+}
+
+fun main() {
+    runSimulation(1000000000000)
 }
 
 fun runSimulation(rocks: Long): Long {
@@ -52,25 +60,28 @@ fun runSimulation(rocks: Long): Long {
     var nextGasIndex = 0;
     var nextRockIndex = 0
     var rockCount: Long = 0
-    while(rockCount < rocks) {
-        rockCount+=1
+    val timer = Timer(rocks)
+    while (rockCount < rocks) {
+        rockCount += 1
+        timer.processed = rockCount
+
         val highestPoint = highestPoint(stationary)
 
-        var current = day17.rocks.getLooping(nextRockIndex).move(Cursor(0, highestPoint.y + 4),stationary)
+        var current = day17.rocks.getLooping(nextRockIndex).move(Cursor(0, highestPoint.y + 4), stationary)
 
         while (true) {
             val direction = gasDirection.getLooping(nextGasIndex)
             current = current.blow(direction, stationary)
-            nextGasIndex+=1
+            nextGasIndex += 1
 
             val previous = current
-            current = current.move(DOWN,stationary)
-            if(previous == current)
+            current = current.move(DOWN, stationary)
+            if (previous == current)
                 break
 
         }
         stationary.add(current)
-        if(stationary.size>30)
+        if (stationary.size > 30)
             stationary.removeAt(0)
 
         nextRockIndex++
@@ -96,9 +107,6 @@ fun highestPoint(stationary: List<Shape>): Cursor {
         .maxByOrNull { it.y }!!
 }
 
-fun part2(): Int {
-    return 1;
-}
 
 val hLine = Shape(
     listOf(
