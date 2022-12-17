@@ -12,6 +12,7 @@ data class Cursor(val x: Int, val y: Int) {
     fun moveY(amount: Int) = copy(y = y + amount)
     fun move(other: Cursor) = copy(x = x + other.x, y = y + other.y)
     fun minus(other: Cursor) = Cursor(x-other.x, y-other.y)
+    fun multip(amount: Int) = copy(x = x*-1, y = y*-1)
     // Manhattan distance
     fun distance(other: Cursor) = abs(x-other.x) + abs(y-other.y)
 
