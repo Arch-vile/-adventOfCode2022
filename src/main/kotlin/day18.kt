@@ -7,6 +7,16 @@ import kotlin.math.abs
 
 fun main() {
 
+//    (0..5).forEach {x ->
+//        (0..5).forEach { y ->
+//            (0..5).forEach {z ->
+//
+//               println()
+//            }
+//        }
+//    }
+
+
     val rocks = points().toSet()
 
     val emptySurface = rocks
@@ -17,25 +27,74 @@ fun main() {
             emptyNeighbours
         }.toSet()
 
-    println(emptySurface)
+    val canSeeSpaceDirectly = emptySurface.filter { empty -> canSeeSpace(empty, rocks) }
 
-    val toProcess = emptySurface.toMutableSet()
+    val canAccessSpace = canSeeSpaceDirectly.toMutableSet()
+    val processed = mutableSetOf<Point>()
+    val toProcess = canSeeSpaceDirectly.toMutableSet()
+
     while (toProcess.isNotEmpty()) {
-        val check = toProcess.first()
-        toProcess.remove(check)
-        val accessible = findAllAccessible(check, emptySurface)
-        if (isOuterLayer(accessible, rocks)) {
-            println("outer layer: ${accessible.size}")
-//            calculateRocks(accessible, rocks).let { println(it) }
-//            throw Error("found")
-        }
+        val next = toProcess.first()
+        toProcess.remove(next)
+        processed.add(next)
+
+        val sees = sees(next, emptySurface)
+        canAccessSpace.addAll(sees)
+
+        toProcess.addAll(sees.minus(processed))
     }
+
+    canAccessSpace.map {
+        neighbourRocks(it, rocks).size
+    }.sum().let { println(it) }
+
+
+// 4044 is too low
+// 2446 is too low
+}
+
+fun sees(current: Point, emptySurface: Set<Point>): Set<Point> {
+    return sees(current,emptySurface, Point(1,0,0))
+        .plus(sees(current,emptySurface,Point(-1,0,0)))
+        .plus(sees(current,emptySurface,Point(0,1,0)))
+        .plus(sees(current,emptySurface,Point(0,-1,0)))
+        .plus(sees(current,emptySurface,Point(0,0,1)))
+        .plus(sees(current,emptySurface,Point(0,0,-1)))
+}
+
+fun sees(current: Point, emptySurface: Set<Point>, direction: Point): Set<Point> {
+    val collected = mutableSetOf<Point>()
+    var next = current
+    while (true) {
+        next = next.plus(direction)
+        val found = emptySurface.firstOrNull { it == next }
+        if (found != null)
+            collected.add(next)
+        else
+            break
+    }
+    return collected
 }
 
 fun calculateRocks(accessible: Set<Point>, rocks: Set<Point>): Int {
     return accessible.map {
         neighbourRocks(it, rocks).size
     }.sum()
+}
+
+fun canSeeSpace(current: Point, rocks: Set<Point>): Boolean {
+    val up = current.onDirection(rocks, Point(0, 1, 0))
+    val down = current.onDirection(rocks, Point(0, -1, 0))
+    val left = current.onDirection(rocks, Point(-1, 0, 0))
+    val right = current.onDirection(rocks, Point(1, 0, 0))
+    val toward = current.onDirection(rocks, Point(0, 0, 1))
+    val away = current.onDirection(rocks, Point(0, 0, -1))
+
+    //  Can reach outer space
+    return (up.isEmpty() || down.isEmpty() ||
+            left.isEmpty() || right.isEmpty() ||
+            toward.isEmpty() || away.isEmpty()
+            )
 }
 
 fun isOuterLayer(empties: Set<Point>, rocks: Set<Point>): Boolean {
@@ -115,7 +174,6 @@ fun findAllAccessible(first: Point, emptySurface: Set<Point>): Set<Point> {
 
 //    println(outerSurface.size)
 
-// 4044 is too low
 
 
 //}
@@ -134,7 +192,7 @@ fun neighbours(current: Point): Set<Point> {
         current.copy(y = current.y + 1),
         current.copy(y = current.y - 1),
         current.copy(z = current.z + 1),
-        current.copy(y = current.z - 1),
+        current.copy(z = current.z - 1),
     )
 
 
@@ -166,7 +224,7 @@ private fun toDirection(value: Long): Long {
 }
 
 private fun points(): List<Point> {
-    val points = readInput("test.txt")
+    val points = readInput("day18-input.txt")
         .map { it.split(",") }
         .map { Point(it[0].toLong(), it[1].toLong(), it[2].toLong()) }
     return points

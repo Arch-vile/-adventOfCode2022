@@ -21,6 +21,10 @@ data class Point(val x: Long, val y: Long, val z: Long = 0) {
         return copy(x=x-it.x,y=y-it.y,z=z-it.z)
     }
 
+    fun plus(it: Point): Point {
+        return copy(x=x+it.x,y=y+it.y,z=z+it.z)
+    }
+
     // e.g. (3,0,-2) -> (1,0,-1)
     fun unitComponents(): Point {
         return copy(
