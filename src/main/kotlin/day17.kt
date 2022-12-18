@@ -51,7 +51,22 @@ fun part2(): Long {
 }
 
 fun main() {
-    runSimulation(100000000)
+
+    val matrix = Matrix(10,10){a,b -> "d"}
+
+    val timer = Timer(1000000000000)
+    var i = 0L
+    while(i < 1000000000000) {
+       timer.processed = i+1
+        val v  = matrix.get(Cursor((i % matrix.width()).toInt(),0))
+        val t  = matrix.get(Cursor((i % matrix.width()).toInt(),(i%matrix.height()).toInt()))
+        val p = t.cursor.move(Cursor(1,2))
+        matrix.rows()[(i%matrix.height()).toInt()].map { it.cursor.move(Cursor(1,1)) }
+        i+=1
+    }
+
+
+    runSimulation(100)
 }
 
 fun runSimulation(rocksToDrop: Long): Long {
@@ -63,24 +78,9 @@ fun runSimulation(rocksToDrop: Long): Long {
     var rockCount: Long = 0
     val timer = Timer(rocksToDrop)
 
-    var patternToMatch: Set<Cursor>? = null
-
     while (rockCount < rocksToDrop) {
         rockCount += 1
         timer.processed = rockCount
-
-        if (stationary.size > 20) {
-            if (patternToMatch == null) {
-                patternToMatch = stationary.takeLast(20).flatMap { it.blocks }.toSet()
-                patternToMatch = normalize(patternToMatch)
-            } else {
-                var test = stationary.takeLast(20).flatMap { it.blocks }.toSet()
-                test = normalize(test)
-                if (test.containsAll(patternToMatch) && test.size == patternToMatch.size) {
-                    throw Error("found")
-                }
-            }
-        }
 
         val highestPoint = highestPoint(stationary)
 
@@ -88,15 +88,6 @@ fun runSimulation(rocksToDrop: Long): Long {
         var current = nextShape.move(Cursor(0, highestPoint.y + 4), stationary)
 
         while (true) {
-
-//            if(
-//                rockCount >10
-//                && nextShape == hLine
-//                && nextGasIndex % gasDirection.size == 0
-//                ) {
-//                visualize(stationary.takeLast(30))
-//                throw Error()
-//            }
 
             val direction = gasDirection.getLooping(nextGasIndex)
             current = current.blow(direction, stationary)
@@ -109,7 +100,7 @@ fun runSimulation(rocksToDrop: Long): Long {
 
         }
         stationary.add(current)
-        if (stationary.size > 50)
+        if (stationary.size > 150)
             stationary.removeAt(0)
 
         nextRockIndex++
@@ -119,6 +110,25 @@ fun runSimulation(rocksToDrop: Long): Long {
 
     val highestPoint = highestPoint(stationary)
     return highestPoint.y.toLong()
+}
+
+private fun tryFindPattern(
+    stationary: MutableList<Shape>,
+    patternToMatch: Set<Cursor>?
+) {
+    var patternToMatch1 = patternToMatch
+    if (stationary.size > 20) {
+        if (patternToMatch1 == null) {
+            patternToMatch1 = stationary.takeLast(20).flatMap { it.blocks }.toSet()
+            patternToMatch1 = normalize(patternToMatch1)
+        } else {
+            var test = stationary.takeLast(20).flatMap { it.blocks }.toSet()
+            test = normalize(test)
+            if (test.containsAll(patternToMatch1) && test.size == patternToMatch1.size) {
+                throw Error("found")
+            }
+        }
+    }
 }
 
 fun normalize(cursors: Set<Cursor>): Set<Cursor> {
