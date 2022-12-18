@@ -2,6 +2,7 @@ package aoc.utils
 
 import java.lang.Long.max
 import java.lang.Long.min
+import kotlin.math.abs
 import kotlin.math.pow
 
 data class Point(val x: Long, val y: Long, val z: Long = 0) {
@@ -10,6 +11,11 @@ data class Point(val x: Long, val y: Long, val z: Long = 0) {
         ((x.toDouble() - to.x).pow(2.0) +
                 (y.toDouble() - to.y).pow(2.0) +
                 (z.toDouble() - to.z).pow(2.0)).pow(0.5);
+
+    // Not diagonally
+    fun nextTo(point: Point): Boolean {
+        return abs(x-point.x)+abs(y-point.y)+abs(z-point.z) == 1L
+    }
 
 }
 data class Line(val start: Point, val end: Point)
