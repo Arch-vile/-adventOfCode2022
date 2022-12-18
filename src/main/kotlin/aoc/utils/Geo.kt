@@ -17,6 +17,39 @@ data class Point(val x: Long, val y: Long, val z: Long = 0) {
         return abs(x-point.x)+abs(y-point.y)+abs(z-point.z) == 1L
     }
 
+    fun minus(it: Point): Point {
+        return copy(x=x-it.x,y=y-it.y,z=z-it.z)
+    }
+
+    // e.g. (3,0,-2) -> (1,0,-1)
+    fun unitComponents(): Point {
+        return copy(
+            x= if(x==0L) 0 else x/ abs(x),
+            y= if(y==0L) 0 else y/abs(y),
+            z= if(z==0L) 0 else z/abs(z)
+        )
+    }
+
+    /**
+     * which of the given points are in the given direction e.g. (0,-1,0)
+     */
+    fun onDirection(points: Set<Point>, direction: Point): Set<Point> {
+        return points.filter {
+            minus(it).unitComponents() == direction
+        }.toSet()
+    }
+
+
+    // Points on direct line to any 6 directions
+    fun onDirectLine(points: Set<Point>): Set<Point> {
+        return points.filter { point ->
+            val isOnSameLine =
+                listOf(abs(x - point.x), abs(y - point.y), abs(z - point.z))
+                    .filter { it != 0L }.size == 1
+
+            isOnSameLine
+        }.toSet()
+    }
 }
 data class Line(val start: Point, val end: Point)
 
@@ -45,3 +78,5 @@ fun pointsInLine(line: Line): List<Point> {
         return yValues.toList().zip(xValues.toList()).map { Point(it.second, it.first) }
     }
 }
+
+
