@@ -1,6 +1,7 @@
 package day20
 
 import aoc.utils.readInput
+import kotlin.math.abs
 
 fun main() {
     // 7030 too low
@@ -16,18 +17,10 @@ data class Holder(var left: Holder?, var right: Holder?,val value: Int, var move
 
 fun part1(): Int {
     // Keep in the list to preserve the original order
-    val originalOrder = readInput("test.txt")
+    val originalOrder = readInput("day20-input.txt")
         .mapIndexed { index, value -> Holder(null, null,value.toInt(), value.toInt(), index) }
 
     val count = originalOrder.size
-
-    // Normalize values, that is remove negative ones or multiples
-    originalOrder.forEach {
-
-        it.moveRight = (it.moveRight+count*3) % count
-        if(it.value < 0)
-            it.moveRight-=1
-    }
 
     // Create links
     originalOrder.forEachIndexed { index, holder ->
@@ -46,7 +39,7 @@ fun part1(): Int {
             it.right?.left = it.left
 
             // Find the new left neighbour
-            val newLeft = getRight(it, it.moveRight)
+            val newLeft = move(it, it.value)
 
             // Place this between
             val oldRight = newLeft.right
@@ -58,9 +51,9 @@ fun part1(): Int {
     }
 
     val zero = originalOrder.firstOrNull { it.value == 0 }!!
-    val thousandth1 = getRight(zero, 1000)
-    val thousandth2 = getRight(zero, 2000)
-    val thousandth3 = getRight(zero, 3000)
+    val thousandth1 = move(zero, 1000)
+    val thousandth2 = move(zero, 2000)
+    val thousandth3 = move(zero, 3000)
 
     println(thousandth1)
     println(thousandth2)
@@ -78,10 +71,10 @@ private fun printIt(originalOrder: List<Holder>) {
     println()
 }
 
-fun getRight(it: Holder, amount: Int): Holder {
+fun move(it: Holder, amount: Int): Holder {
    var current = it
-   repeat(amount) {
-      current = current.right!!
+   repeat(abs(amount) + if(amount<0) 1 else 0) {
+      current = if(amount<0) current.left!! else current.right!!
    }
     return current
 }
