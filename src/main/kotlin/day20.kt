@@ -4,23 +4,31 @@ import aoc.utils.readInput
 import kotlin.math.abs
 
 fun main() {
+
+
     // 7030 too low
-    part1().let { println(it) }
+    part2().let { println(it) }
 }
 
 
-data class Holder(var left: Holder?, var right: Holder?,val value: Int, var moveRight: Int, val originalIndex: Int) {
+data class Holder(var left: Holder?, var right: Holder?, var move: Long, var originalValue: Long, val originalIndex: Int) {
     override fun toString(): String {
-        return "$value"
+        return "$move"
     }
 }
 
-fun part1(): Int {
+fun part2(): Long {
     // Keep in the list to preserve the original order
     val originalOrder = readInput("day20-input.txt")
-        .mapIndexed { index, value -> Holder(null, null,value.toInt(), value.toInt(), index) }
+        .mapIndexed { index, value -> Holder(null, null, 0, value.toLong() * 1, index) }
 
     val count = originalOrder.size
+
+    // Normalize
+    originalOrder.forEach {
+//        it.move = it.originalValue % count
+        it.move = it.originalValue
+    }
 
     // Create links
     originalOrder.forEachIndexed { index, holder ->
@@ -30,55 +38,55 @@ fun part1(): Int {
         holder.right = right
     }
 
-    originalOrder.forEach {
+    repeat(1) {
+        originalOrder.forEach {
 
-        if(it.value != 0) {
+            if (it.move != 0L) {
 
-            // Link left and right of this instead, i.e. remove this from between
-            it.left?.right =it.right
-            it.right?.left = it.left
+                // Link left and right of this instead, i.e. remove this from between
+                it.left?.right = it.right
+                it.right?.left = it.left
 
-            // Find the new left neighbour
-            val newLeft = move(it, it.value)
+                // Find the new left neighbour
+                val newLeft = move(it, it.move)
 
-            // Place this between
-            val oldRight = newLeft.right
-            newLeft.right = it
-            oldRight?.left = it
-            it.left = newLeft
-            it.right = oldRight
+                // Place this between
+                val oldRight = newLeft.right
+                newLeft.right = it
+                oldRight?.left = it
+                it.left = newLeft
+                it.right = oldRight
+            }
+//            printIt(originalOrder)
         }
     }
 
-    val zero = originalOrder.firstOrNull { it.value == 0 }!!
+    val zero = originalOrder.firstOrNull { it.move == 0L }!!
     val thousandth1 = move(zero, 1000)
     val thousandth2 = move(zero, 2000)
     val thousandth3 = move(zero, 3000)
 
-    println(thousandth1)
-    println(thousandth2)
-    println(thousandth3)
+    println(thousandth1.originalValue)
+    println(thousandth2.originalValue)
+    println(thousandth3.originalValue)
 
-    return thousandth1.value + thousandth2.value + thousandth3.value
+    return thousandth1.originalValue + thousandth2.originalValue + thousandth3.originalValue
 }
 
 private fun printIt(originalOrder: List<Holder>) {
     var current = originalOrder[0]
     repeat(originalOrder.size) {
-        print(current.value.toString()+", ")
+        print(current.originalValue.toString() + ", ")
         current = current.right!!
     }
     println()
 }
 
-fun move(it: Holder, amount: Int): Holder {
-   var current = it
-   repeat(abs(amount) + if(amount<0) 1 else 0) {
-      current = if(amount<0) current.left!! else current.right!!
-   }
+fun move(it: Holder, amount: Long): Holder {
+    var current = it
+    repeat(abs(amount.toInt()) + if (amount < 0) 1 else 0) {
+        current = if (amount < 0) current.left!! else current.right!!
+    }
     return current
 }
 
-fun part2(): Int {
-    return 1;
-}
