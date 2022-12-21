@@ -33,7 +33,17 @@ data class Monkey(
             '/' -> {
                 val leftv = left!!.valued()
                 val rightV = right!!.valued()
-                Math.divideExact(leftv, rightV)
+                val div = Math.divideExact(leftv, rightV)
+
+//                if(BigInteger(div.toString()).multiply(BigInteger(rightV.toString())) != BigInteger(leftv.toString())) {
+//                   throw Error("Difference ${leftv} ${rightV}")
+//                }
+
+                 if(leftv % rightV != 0L) {
+                   throw Error("Difference ${leftv} ${rightV}")
+                 }
+
+                return div
             }
             else -> throw Error("unhandled $operation")
         }
@@ -55,10 +65,22 @@ fun part2(): Long {
     var test = increment
     var lastUnder =  test
 
+    root.left!!.valued()
+
 //    you.value = 3887609741192
+    //            3887609741189
     while (true) {
         you.value = test
-        val left = root.left!!.valued()
+
+       var left = 0L
+        try {
+             left = root.left!!.valued()
+        } catch (e: Error) {
+//         println("Left failed with test value $test")
+            test += 1
+           continue
+        }
+//        println("Did not fail division with $test")
         val right = root.right!!.valued()
 
         if (left == right) {
@@ -69,7 +91,7 @@ fun part2(): Long {
         // Left seems to be decreasing as we increase test
         if(left > right) {
              lastUnder = test
-            increment += 2
+            increment *= 2
         }
 
 //        Went too far
@@ -82,8 +104,7 @@ fun part2(): Long {
         test += increment
     }
 
-    // 3887609741192 too high
-    return 0
+    throw Error("Did not find result")
 }
 
 private fun monkeys(): Map<String, Monkey> {
