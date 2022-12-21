@@ -1,17 +1,16 @@
 package day20
 
 import aoc.utils.readInput
+import kotlin.math.E
 import kotlin.math.abs
 
 fun main() {
 
-
-    // 7030 too low
     part2().let { println(it) }
 }
 
 
-data class Holder(var left: Holder?, var right: Holder?, var move: Long, var originalValue: Long, val originalIndex: Int) {
+data class Holder(var left: Holder?, var right: Holder?, var move: Long, var originalValue: Long) {
     override fun toString(): String {
         return "$move"
     }
@@ -20,15 +19,18 @@ data class Holder(var left: Holder?, var right: Holder?, var move: Long, var ori
 fun part2(): Long {
     // Keep in the list to preserve the original order
     val originalOrder = readInput("day20-input.txt")
-        .mapIndexed { index, value -> Holder(null, null, 0, value.toLong() * 1, index) }
+        .map { value ->
+            Holder(null, null, 0, value.toLong() * 811589153L) }
 
     val count = originalOrder.size
 
     // Normalize
     originalOrder.forEach {
-//        it.move = it.originalValue % count
-        it.move = it.originalValue
+        it.move = it.originalValue % (count.toLong()-1)
     }
+
+//    originalOrder.forEach { println(it.move) }
+
 
     // Create links
     originalOrder.forEachIndexed { index, holder ->
@@ -38,7 +40,7 @@ fun part2(): Long {
         holder.right = right
     }
 
-    repeat(1) {
+    repeat(10) {
         originalOrder.forEach {
 
             if (it.move != 0L) {
@@ -61,7 +63,9 @@ fun part2(): Long {
         }
     }
 
-    val zero = originalOrder.firstOrNull { it.move == 0L }!!
+    printIt(originalOrder)
+
+    val zero = originalOrder.firstOrNull { it.originalValue == 0L }!!
     val thousandth1 = move(zero, 1000)
     val thousandth2 = move(zero, 2000)
     val thousandth3 = move(zero, 3000)
@@ -83,10 +87,23 @@ private fun printIt(originalOrder: List<Holder>) {
 }
 
 fun move(it: Holder, amount: Long): Holder {
+
+    var repeat = abs(amount)
+    if(amount<0)
+        repeat+=1
+
+    var index = 0
     var current = it
-    repeat(abs(amount.toInt()) + if (amount < 0) 1 else 0) {
+    while(index < repeat) {
         current = if (amount < 0) current.left!! else current.right!!
+        index+=1
     }
+
+
+//    var current = it
+//    repeat(abs(amount.toInt()) + if (amount < 0) 1 else 0) {
+//        current = if (amount < 0) current.left!! else current.right!!
+//    }
     return current
 }
 
