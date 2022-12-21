@@ -2,7 +2,6 @@ package day21
 
 import aoc.utils.findFirstInt
 import aoc.utils.readInput
-import java.math.BigInteger
 
 fun main() {
     part2().let { println(it) }
@@ -27,24 +26,21 @@ data class Monkey(
             return value!!
 
         return when (operation) {
-            '+' -> Math.addExact(left!!.valued(),  right!!.valued())
-            '-' -> Math.addExact(left!!.valued() , -1 * right!!.valued())
-            '*' -> Math.multiplyExact(left!!.valued(),  right!!.valued())
+            '+' -> Math.addExact(left!!.valued(), right!!.valued())
+            '-' -> Math.addExact(left!!.valued(), -1 * right!!.valued())
+            '*' -> Math.multiplyExact(left!!.valued(), right!!.valued())
             '/' -> {
                 val leftv = left!!.valued()
                 val rightV = right!!.valued()
                 val div = Math.divideExact(leftv, rightV)
 
-//                if(BigInteger(div.toString()).multiply(BigInteger(rightV.toString())) != BigInteger(leftv.toString())) {
-//                   throw Error("Difference ${leftv} ${rightV}")
-//                }
-
-                 if(leftv % rightV != 0L) {
-                   throw Error("Difference ${leftv} ${rightV}")
-                 }
+                if (leftv % rightV != 0L) {
+                    throw Error("Difference ${leftv} ${rightV}")
+                }
 
                 return div
             }
+
             else -> throw Error("unhandled $operation")
         }
     }
@@ -63,24 +59,20 @@ fun part2(): Long {
 
     var increment = 1L
     var test = increment
-    var lastUnder =  test
+    var lastUnder = test
 
     root.left!!.valued()
 
-//    you.value = 3887609741192
-    //            3887609741189
     while (true) {
         you.value = test
 
-       var left = 0L
+        var left = 0L
         try {
-             left = root.left!!.valued()
+            left = root.left!!.valued()
         } catch (e: Error) {
-//         println("Left failed with test value $test")
             test += 1
-           continue
+            continue
         }
-//        println("Did not fail division with $test")
         val right = root.right!!.valued()
 
         if (left == right) {
@@ -89,18 +81,17 @@ fun part2(): Long {
 
         // Left starts bigger than right
         // Left seems to be decreasing as we increase test
-        if(left > right) {
-             lastUnder = test
+        if (left > right) {
+            lastUnder = test
             increment *= 2
         }
 
 //        Went too far
-        if(left < right) {
+        if (left < right) {
             increment = 1
             test = lastUnder
         }
 
-//        println("${test.toString().padStart(10)} ${(left-right).toString().padStart(20)}")
         test += increment
     }
 
