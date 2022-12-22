@@ -9,7 +9,7 @@ val LEFT = Cursor(-1, 0)
 val RIGHT = Cursor(1, 0)
 val ROTATIONS = listOf(UP, RIGHT, DOWN, LEFT)
 
-data class Actor(val location: Cursor, val direction: Cursor, val map: Matrix<Char>) {
+data class Actor(val location: Block, val direction: Cursor) {
     fun turn(direction: Char): Actor {
         val newDirection = when (direction) {
             'R' -> ROTATIONS.getLooping(ROTATIONS.indexOf(this.direction) + 1)
@@ -21,26 +21,29 @@ data class Actor(val location: Cursor, val direction: Cursor, val map: Matrix<Ch
         return copy(direction = newDirection)
     }
 
-
-    // TODO: Optimize the uncharted territory travel?
     fun move(move: Int): Actor {
-        var validLocation = location
+        var movesLeft = move
         var newLocation = location
-        repeat(move) {
-            newLocation = map.putInBounds(newLocation.plus(direction))
-            // uncharted territory, let's eat those away
-            while (map.get(newLocation).value == ' ') {
-                newLocation = map.putInBounds(newLocation.plus(direction))
-            }
-            // Hit the wall, step back
-            if (map.get(newLocation).value == '#') {
-                return copy(location = validLocation)
-            } else {
-                validLocation = newLocation
-            }
+        var prevLocation = location
+        while(movesLeft != 0) {
+            movesLeft--
 
+            prevLocation = newLocation
+            if (direction == UP)
+                newLocation = newLocation.up!!
+            if (direction == DOWN)
+                newLocation = newLocation.down!!
+            if (direction == LEFT)
+                newLocation = newLocation.left!!
+            if (direction == RIGHT)
+                newLocation = newLocation.right!!
+
+            if(newLocation.type == '#'){
+                return copy(location = prevLocation)
+            }
         }
-        return copy(location = validLocation)
+
+        return copy(location = newLocation)
     }
 
 }
@@ -50,13 +53,34 @@ fun main() {
     part1().let { println(it) }
 }
 
+data class Block(var type: Char, var location: Cursor, var left: Block?, var right: Block?, var up: Block?, var down: Block?) {
+    override fun toString(): String {
+        return type.toString()
+    }
+}
+
 fun part1(): Int {
-    val map = readMap(input())
+    val map = readMap(input()).map {
+        Block(it.value, it.cursor, null, null, null, null)
+    }
+
+    map.findAll { it.value.type != ' ' }
+        .forEach {
+            it.value.left = getNextLooping(it.cursor, LEFT, map)
+            it.value.right = getNextLooping(it.cursor, RIGHT, map)
+            it.value.up = getNextLooping(it.cursor, UP, map)
+            it.value.down = getNextLooping(it.cursor, DOWN, map)
+        }
+
+    return solve(map)
+}
+
+private fun solve(map: Matrix<Block>): Int {
     val directions = directions(input())
     val startPosition = findStart(map)
-    var actor = Actor(startPosition, RIGHT, map)
+    var actor = Actor(startPosition, RIGHT)
 
-    directions.forEach { direction ->
+    directions.forEachIndexed { index, direction ->
         if (direction.turn != '?') {
             actor = actor.turn(direction.turn)
         } else {
@@ -64,11 +88,12 @@ fun part1(): Int {
         }
 
 
-//        val temp = map.get(actor.location)
-//        map.replace(actor.location) { '@' }
+//        println(index)
+//        val temp = map.get(actor.location.location).value.type
+//        map.get(actor.location.location).value.type = '@'
 //        println(map.visualize(""))
 //        println("*******************************")
-//        map.replace(actor.location) { temp.value }
+//        map.get(actor.location.location).value.type = temp
     }
 
 //    println(actor.location)
@@ -78,21 +103,27 @@ fun part1(): Int {
 //
 //    println(map.visualize(""))
 
-    return (actor.location.y+1)*1000+ (actor.location.x+1)*4 + when (actor.direction) {
-       RIGHT -> 0
-       DOWN -> 1
-       LEFT -> 2
-       UP -> 3
-       else -> throw Error()
+    val actorSpot = map.find { it == actor.location }!!
+
+    return (actorSpot.cursor.y + 1) * 1000 + (actorSpot.cursor.x + 1) * 4 + when (actor.direction) {
+        RIGHT -> 0
+        DOWN -> 1
+        LEFT -> 2
+        UP -> 3
+        else -> throw Error()
     }
 }
 
-fun findStart(map: Matrix<Char>): Cursor {
-    map.rows()[0].forEachIndexed { index, entry ->
-        if (entry.value == ' ')
-            return map.get(index, 0).cursor
+fun getNextLooping(cursor: Cursor, direction: Cursor, map: Matrix<Block>): Block {
+    var newLocation = map.putInBounds(cursor.plus(direction))
+    while (map.get(newLocation).value.type == ' ') {
+        newLocation = map.putInBounds(newLocation.plus(direction))
     }
-    throw Error("Could not find start")
+    return map.get(newLocation).value
+}
+
+fun findStart(map: Matrix<Block>): Block {
+    return map.rows()[0].firstOrNull { it.value.type == '.' }!!.value
 }
 
 data class Direction(val move: Int, val turn: Char)
