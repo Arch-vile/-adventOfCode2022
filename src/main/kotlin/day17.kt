@@ -1,7 +1,6 @@
 package day17
 
 import aoc.utils.*
-import kotlin.math.E
 import kotlin.text.toList
 
 data class Shape(val blocks: List<Cursor>) {
@@ -12,7 +11,7 @@ data class Shape(val blocks: List<Cursor>) {
     }
 
     fun move(move: Cursor, stationary: MutableList<Shape>): Shape {
-        val updated = this.copy(blocks = blocks.map { it.move(move) })
+        val updated = this.copy(blocks = blocks.map { it.plus(move) })
         return if (!updated.isFalling(stationary) || updated.isOutOfBounds()) {
             this
         } else {
@@ -60,8 +59,8 @@ fun main() {
        timer.processed = i+1
         val v  = matrix.get(Cursor((i % matrix.width()).toInt(),0))
         val t  = matrix.get(Cursor((i % matrix.width()).toInt(),(i%matrix.height()).toInt()))
-        val p = t.cursor.move(Cursor(1,2))
-        matrix.rows()[(i%matrix.height()).toInt()].map { it.cursor.move(Cursor(1,1)) }
+        val p = t.cursor.plus(Cursor(1,2))
+        matrix.rows()[(i%matrix.height()).toInt()].map { it.cursor.plus(Cursor(1,1)) }
         i+=1
     }
 

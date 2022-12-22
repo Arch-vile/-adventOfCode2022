@@ -7,10 +7,10 @@ import kotlin.math.abs
 data class Entry<T>(val cursor: Cursor, val value: T)
 data class Size(val width: Int, val height: Int)
 data class Cursor(val x: Int, val y: Int) {
-    fun move(amount: Int) = copy(x = x + amount,y = y + amount)
+    fun plus(amount: Int) = copy(x = x + amount,y = y + amount)
     fun moveX(amount: Int) = copy(x = x + amount)
     fun moveY(amount: Int) = copy(y = y + amount)
-    fun move(other: Cursor) = copy(x = x + other.x, y = y + other.y)
+    fun plus(other: Cursor) = copy(x = x + other.x, y = y + other.y)
     fun minus(other: Cursor) = Cursor(x-other.x, y-other.y)
     fun multip(amount: Int) = copy(x = x*-1, y = y*-1)
     // Manhattan distance
@@ -105,7 +105,7 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     }
 
     fun tileAround(center: Cursor, radius: Int, fill: T? = null): Matrix<T> {
-        return tile(center.move(radius*-1), center.move(radius), fill)
+        return tile(center.plus(radius*-1), center.plus(radius), fill)
     }
 
 
@@ -184,14 +184,14 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
     fun getRelativeAt(cursor: Cursor, getRelative: List<Cursor>): List<Entry<T>> {
         return getRelative
             .map {
-                cursor.move(it)
+                cursor.plus(it)
             }
             .filter { it.y < data.size && it.y >= 0 && it.x < data[0].size && it.x >= 0 }
             .map { get(it) }
     }
 
     fun getRelative(cursor: Cursor, relative: Cursor): Entry<T>? {
-        val location = cursor.move(relative)
+        val location = cursor.plus(relative)
         if(isInBounds(location))
             return get(location)
         else
@@ -267,6 +267,15 @@ class Matrix<T>(input: List<List<T>>, filler: ((x: Int, y: Int) -> T)? = null) {
 
     fun isInBounds(next: Cursor): Boolean {
         return next.x >= 0 && next.x < width() && next.y >= 0 && next.y < height()
+    }
+
+    // Puts given cursor back on bounds by "looping" around edges
+    fun putInBounds(cursor: Cursor): Cursor {
+       val normalizedX = cursor.x % width()
+       val normalizedY = cursor.y % height()
+
+       // Take care of possible negatives by adding max
+       return Cursor((normalizedX + width()) % width() , (normalizedY + height()) % height())
     }
 
 

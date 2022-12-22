@@ -25,6 +25,7 @@ fun String.findInts(): List<Int> {
     return findGroups("""(-?\d+)""".toRegex()).map { it.toInt()}
 }
 
+// Regex with some groups (..) on it
 fun String.findGroups(regex: Regex): List<String> {
     return regex.findAll(this)
         .map { it.groupValues }

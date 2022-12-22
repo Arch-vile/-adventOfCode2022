@@ -46,11 +46,11 @@ fun part2(): Int {
             val downRight = Cursor(1, 1)
 
             if (cave.getRelative(sand, down) == null || cave.getRelative(sand, down)?.value == '.') {
-                sand = sand.move(down)
+                sand = sand.plus(down)
             } else if (cave.getRelative(sand, downLeft) == null || cave.getRelative(sand, downLeft)?.value == '.') {
-                sand = sand.move(downLeft)
+                sand = sand.plus(downLeft)
             } else if (cave.getRelative(sand, downRight) == null || cave.getRelative(sand, downRight)?.value == '.') {
-                sand = sand.move(downRight)
+                sand = sand.plus(downRight)
             } else if(cave.isInBounds(sand)){
 
                 if(sand==sandSource.minus(offset)) {
@@ -107,11 +107,11 @@ fun part1(): Int {
             val downRight = Cursor(1, 1)
 
             if (cave.getRelative(sand, down) == null || cave.getRelative(sand, down)?.value == '.') {
-                sand = sand.move(down)
+                sand = sand.plus(down)
             } else if (cave.getRelative(sand, downLeft) == null || cave.getRelative(sand, downLeft)?.value == '.') {
-                sand = sand.move(downLeft)
+                sand = sand.plus(downLeft)
             } else if (cave.getRelative(sand, downRight) == null || cave.getRelative(sand, downRight)?.value == '.') {
-                sand = sand.move(downRight)
+                sand = sand.plus(downRight)
             } else if(cave.isInBounds(sand)){
                 cave.replace(sand) { 'o' }
                 sand = null
