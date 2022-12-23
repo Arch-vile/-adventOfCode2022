@@ -9,11 +9,12 @@ val LEFT = Cursor(-1, 0)
 val RIGHT = Cursor(1, 0)
 val ROTATIONS = listOf(UP, RIGHT, DOWN, LEFT)
 
-data class Actor(val location: Block, val direction: Cursor) {
+data class Actor(val location: Block, val direction: Block) {
     fun turn(direction: Char): Actor {
+        val currentDirectionIndex = location.neighbours.indexOf(this.direction)
         val newDirection = when (direction) {
-            'R' -> ROTATIONS.getLooping(ROTATIONS.indexOf(this.direction) + 1)
-            'L' -> ROTATIONS.getLooping(ROTATIONS.indexOf(this.direction) - 1)
+            'R' -> location.neighbours.getLooping(currentDirectionIndex+1)
+            'L' -> location.neighbours.getLooping(currentDirectionIndex-1)
             '?' -> this.direction
             else -> throw Error("unknown direction $direction")
         }
@@ -21,55 +22,73 @@ data class Actor(val location: Block, val direction: Cursor) {
         return copy(direction = newDirection)
     }
 
-    fun move(move: Int): Actor {
-        var movesLeft = move
-        var newLocation = location
-        var prevLocation = location
-        while(movesLeft != 0) {
-            movesLeft--
-
-            prevLocation = newLocation
-            if (direction == UP)
-                newLocation = newLocation.up!!
-            if (direction == DOWN)
-                newLocation = newLocation.down!!
-            if (direction == LEFT)
-                newLocation = newLocation.left!!
-            if (direction == RIGHT)
-                newLocation = newLocation.right!!
-
-            if(newLocation.type == '#'){
-                return copy(location = prevLocation)
-            }
+    fun move(movesLeft: Int): Actor {
+        if(movesLeft == 0) {
+            return this
         }
 
-        return copy(location = newLocation)
+        val newLocation = this.direction
+        val newDirection = newLocation.oppositeOf(this.location)
+
+        if(newLocation.type == '#') {
+            return this
+        } else {
+            return copy(location =newLocation, direction = newDirection).move(movesLeft-1)
+        }
     }
 
 }
 
 fun main() {
 
-    part1().let { println(it) }
+    part2().let { println(it) }
 }
 
-data class Block(var type: Char, var location: Cursor, var left: Block?, var right: Block?, var up: Block?, var down: Block?) {
+data class Block(
+    var type: Char,
+    var location: Cursor,
+    var neighbours: List<Block>
+) {
     override fun toString(): String {
         return type.toString()
     }
+
+    // As the neighbours are in clockwise order, we get the opposite by indexing +2
+    fun oppositeOf(of: Block): Block {
+        val index = neighbours.indexOf(of)
+        return neighbours.getLooping(index+2)
+    }
+}
+
+fun part2(): Int {
+//    val map = readMap(input()).map {
+//        Block(it.value, it.cursor, mutableListOf())
+//    }
+//
+//    map.findAll { it.value.type != ' ' }
+//        .forEach {
+//            it.value.left = getNextLooping(it.cursor, LEFT, map)
+//        }
+//
+//    return solve(map)
+    return 1
 }
 
 fun part1(): Int {
     val map = readMap(input()).map {
-        Block(it.value, it.cursor, null, null, null, null)
+        Block(it.value, it.cursor, listOf())
     }
 
     map.findAll { it.value.type != ' ' }
         .forEach {
-            it.value.left = getNextLooping(it.cursor, LEFT, map)
-            it.value.right = getNextLooping(it.cursor, RIGHT, map)
-            it.value.up = getNextLooping(it.cursor, UP, map)
-            it.value.down = getNextLooping(it.cursor, DOWN, map)
+            it.value.neighbours =
+                    // Order must be in clockwise, and for end scoring same order as scores given
+                listOf(
+                    getNextLooping(it.cursor, RIGHT, map),
+                    getNextLooping(it.cursor, DOWN, map),
+                    getNextLooping(it.cursor, LEFT, map),
+                    getNextLooping(it.cursor, UP, map),
+                )
         }
 
     return solve(map)
@@ -78,9 +97,16 @@ fun part1(): Int {
 private fun solve(map: Matrix<Block>): Int {
     val directions = directions(input())
     val startPosition = findStart(map)
-    var actor = Actor(startPosition, RIGHT)
+    var actor = Actor(startPosition, startPosition.neighbours[0])
 
     directions.forEachIndexed { index, direction ->
+        println(index)
+        val temp = map.get(actor.location.location).value.type
+        map.get(actor.location.location).value.type = '@'
+        println(map.visualize(""))
+        println("*******************************")
+        map.get(actor.location.location).value.type = temp
+
         if (direction.turn != '?') {
             actor = actor.turn(direction.turn)
         } else {
@@ -88,12 +114,7 @@ private fun solve(map: Matrix<Block>): Int {
         }
 
 
-//        println(index)
-//        val temp = map.get(actor.location.location).value.type
-//        map.get(actor.location.location).value.type = '@'
-//        println(map.visualize(""))
-//        println("*******************************")
-//        map.get(actor.location.location).value.type = temp
+
     }
 
 //    println(actor.location)
@@ -105,13 +126,10 @@ private fun solve(map: Matrix<Block>): Int {
 
     val actorSpot = map.find { it == actor.location }!!
 
-    return (actorSpot.cursor.y + 1) * 1000 + (actorSpot.cursor.x + 1) * 4 + when (actor.direction) {
-        RIGHT -> 0
-        DOWN -> 1
-        LEFT -> 2
-        UP -> 3
-        else -> throw Error()
-    }
+    println(actorSpot)
+
+    return (actorSpot.cursor.y + 1) * 1000 + (actorSpot.cursor.x + 1) * 4
+    + actor.location.neighbours.indexOf(actor.direction)
 }
 
 fun getNextLooping(cursor: Cursor, direction: Cursor, map: Matrix<Block>): Block {
@@ -145,10 +163,6 @@ fun directions(input: List<String>): List<Direction> {
 fun readMap(input: List<String>): Matrix<Char> {
     val mapRows = input.takeWhile { it != "" }.map { it.toCharArray().toList() }
     return Matrix(mapRows) { x, y -> ' ' }
-}
-
-fun part2(): Int {
-    return 1;
 }
 
 private fun input() = readInput("day22-input.txt")
